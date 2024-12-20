@@ -4,8 +4,8 @@
 # https://github.com/sefinek/UFW-AbuseIPDB-Reporter
 ##
 
-VERSION="1.1.1"
-DATE="01.12.2024"
+VERSION="1.1.2"
+DATE="20.12.2024"
 REPO="https://github.com/sefinek/UFW-AbuseIPDB-Reporter"
 
 cat << "EOF"
