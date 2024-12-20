@@ -50,6 +50,14 @@ const processLogLine = async line => {
 		return;
 	}
 
+	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
+	// TCP connections can only be reported if they complete the three-way handshake. UDP connections cannot be reported.
+	// More: https://www.abuseipdb.com/reporting-policy
+	if (proto === 'UDP') {
+		log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}"`);
+		return;
+	}
+
 	if (isIpReportedRecently(srcIp)) {
 		const lastReportedTime = reportedIps.get(srcIp);
 		const elapsedTime = Math.floor(Date.now() / 1000 - lastReportedTime);
