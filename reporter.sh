@@ -190,6 +190,14 @@ process_log_line() {
         len=$(echo "$line" | grep -oP 'LEN=\K[^\s]+')
         tos=$(echo "$line" | grep -oP 'TOS=\K[^\s]+')
 
+        # Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
+        # TCP connections can only be reported if they complete the three-way handshake. UDP connections cannot be reported.
+        # More: https://www.abuseipdb.com/reporting-policy
+        if [[ "$proto" == "UDP" ]]; then
+            log "INFO" "Skipping UDP traffic: SRC=$src_ip DPT=$dpt"
+            return
+        fi
+
         if is_ip_reported_recently "$src_ip"; then
             log "INFO" "IP $src_ip ($proto) was reported recently"
             return
