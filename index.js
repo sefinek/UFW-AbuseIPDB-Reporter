@@ -28,19 +28,28 @@ const reportToAbuseIPDb = async (ip, categories, comment) => {
 const processLogLine = async line => {
 	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring line: ${line}`);
 
-	const match = {
+	const logData = {
 		timestamp: line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0] || null,
-		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null,
-		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null,
-		proto: line.match(/PROTO=(\S+)/)?.[1] || null,
-		spt: line.match(/SPT=(\d+)/)?.[1] || null,
-		dpt: line.match(/DPT=(\d+)/)?.[1] || null,
-		ttl: line.match(/TTL=(\d+)/)?.[1] || null,
-		len: line.match(/LEN=(\d+)/)?.[1] || null,
-		tos: line.match(/TOS=(\S+)/)?.[1] || null,
+		In:        line.match(/IN=([\d.]+)/)?.[1] || null,
+		Out:       line.match(/OUT=([\d.]+)/)?.[1] || null,
+		srcIp:     line.match(/SRC=([\d.]+)/)?.[1] || null,
+		dstIp:     line.match(/DST=([\d.]+)/)?.[1] || null,
+		res:       line.match(/RES=(\S+)/)?.[1] || null,
+		tos:       line.match(/TOS=(\S+)/)?.[1] || null,
+		prec:      line.match(/PREC=(\S+)/)?.[1] || null,
+		ttl:       line.match(/TTL=(\d+)/)?.[1] || null,
+		id:        line.match(/ID=(\d+)/)?.[1] || null,
+		proto:     line.match(/PROTO=(\S+)/)?.[1] || null,
+		spt:       line.match(/SPT=(\d+)/)?.[1] || null,
+		dpt:       line.match(/DPT=(\d+)/)?.[1] || null,
+		len:       line.match(/LEN=(\d+)/)?.[1] || null,
+		urgp:      line.match(/URGP=(\d+)/)?.[1] || null,
+		mac:       line.match(/MAC=([\w:]+)/)?.[1] || null,
+		window:    line.match(/WINDOW=(\d+)/)?.[1] || null,
+		syn:       !!line.includes('SYN'),
 	};
 
-	const { srcIp, proto, dpt } = match;
+	const { srcIp, proto, dpt } = logData;
 	if (!srcIp) {
 		log(1, `Missing SRC in log line: ${line}`);
 		return;
@@ -85,7 +94,7 @@ const processLogLine = async line => {
 	}
 
 	const categories = config.DETERMINE_CATEGORIES(proto, dpt);
-	const comment = config.REPORT_COMMENT(match.timestamp, srcIp, match.dstIp, proto, match.spt, dpt, match.ttl, match.len, match.tos, SERVER_ID);
+	const comment = config.REPORT_COMMENT(logData, line, SERVER_ID);
 
 	log(0, `Reporting IP ${srcIp} (${proto} ${dpt}) with categories: ${categories}`);
 
