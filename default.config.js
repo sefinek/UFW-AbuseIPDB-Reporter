@@ -1,8 +1,8 @@
 exports.MAIN = {
 	// Server
-	LOG_FILE: '/var/log/ufw.log',
+	UFW_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
-	SERVER_IDENTIFIER: null,
+	SERVER_ID: null,
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '',

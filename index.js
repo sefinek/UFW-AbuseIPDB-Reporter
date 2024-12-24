@@ -1,16 +1,16 @@
 const fs = require('node:fs');
 const chokidar = require('chokidar');
 const isLocalIP = require('./utils/isLocalIP.js');
-const { reportedIps, loadReportedIps, saveReportedIps, isIpReportedRecently, markIpAsReported } = require('./utils/cache.js');
+const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./utils/cache.js');
 const log = require('./utils/log.js');
 const axios = require('./services/axios.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
-const { LOG_FILE, ABUSEIPDB_API_KEY, SERVER_IDENTIFIER } = config.MAIN;
+const { UFW_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
 
 let fileOffset = 0;
 
-const reportToAbuseIpDb = async (ip, categories, comment) => {
+const reportToAbuseIPDb = async (ip, categories, comment) => {
 	try {
 		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip, categories, comment }), {
 			headers: { 'Key': ABUSEIPDB_API_KEY },
@@ -58,8 +58,8 @@ const processLogLine = async line => {
 		return;
 	}
 
-	if (isIpReportedRecently(srcIp)) {
-		const lastReportedTime = reportedIps.get(srcIp);
+	if (isIPReportedRecently(srcIp)) {
+		const lastReportedTime = reportedIPs.get(srcIp);
 		const elapsedTime = Math.floor(Date.now() / 1000 - lastReportedTime);
 
 		const days = Math.floor(elapsedTime / 86400);
@@ -79,27 +79,30 @@ const processLogLine = async line => {
 	}
 
 	const categories = config.DETERMINE_CATEGORIES(proto, dpt);
-	const comment = config.REPORT_COMMENT(match.timestamp, srcIp, match.dstIp, proto, match.spt, dpt, match.ttl, match.len, match.tos, SERVER_IDENTIFIER);
+	const comment = config.REPORT_COMMENT(match.timestamp, srcIp, match.dstIp, proto, match.spt, dpt, match.ttl, match.len, match.tos, SERVER_ID);
 
 	log(0, `Reporting IP ${srcIp} (${proto} ${dpt}) with categories: ${categories}`);
 
-	if (await reportToAbuseIpDb(srcIp, categories, comment)) {
-		markIpAsReported(srcIp);
-		saveReportedIps();
+	if (await reportToAbuseIPDb(srcIp, categories, comment)) {
+		markIPAsReported(srcIp);
+		saveReportedIPs();
 	}
 };
 
-const startMonitoring = () => {
-	loadReportedIps();
+(async () => {
+	log(0, `* Version: ${version}`);
+	log(0, `* Repository: ${GITHUB_REPO}`);
 
-	if (!fs.existsSync(LOG_FILE)) {
-		log(2, `Log file ${LOG_FILE} does not exist.`);
+	loadReportedIPs();
+
+	if (!fs.existsSync(UFW_FILE)) {
+		log(2, `Log file ${UFW_FILE} does not exist.`);
 		return;
 	}
 
-	fileOffset = fs.statSync(LOG_FILE).size;
+	fileOffset = fs.statSync(UFW_FILE).size;
 
-	chokidar.watch(LOG_FILE, { persistent: true, ignoreInitial: true })
+	chokidar.watch(UFW_FILE, { persistent: true, ignoreInitial: true })
 		.on('change', path => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
@@ -114,8 +117,6 @@ const startMonitoring = () => {
 			});
 		});
 
-	log(0, `==================== Version ${version} ====================`);
-	log(0, `Ready! Now monitoring: ${LOG_FILE}`);
-};
-
-startMonitoring();
+	log(0, '=====================================================================');
+	log(0, `Ready! Now monitoring: ${UFW_FILE}`);
+})();
