@@ -96,7 +96,7 @@ const processLogLine = async line => {
 	const categories = config.DETERMINE_CATEGORIES(proto, dpt);
 	const comment = config.REPORT_COMMENT(logData, line, SERVER_ID);
 
-	log(0, `Reporting IP ${srcIp} (${proto} ${dpt}) with categories: ${categories}`);
+	log(0, `Reporting ${srcIp} (${dpt}/${proto}) with categories: ${categories}`);
 
 	if (await reportToAbuseIPDb(srcIp, categories, comment)) {
 		markIPAsReported(srcIp);
@@ -132,6 +132,6 @@ const processLogLine = async line => {
 			});
 		});
 
-	log(0, '=====================================================================');
 	log(0, `Ready! Now monitoring: ${UFW_FILE}`);
+	log(0, '=====================================================================');
 })();
