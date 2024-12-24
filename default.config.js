@@ -35,7 +35,6 @@ exports.MAIN = {
  * @param {boolean} logData.syn
  * @param {string|null} fullLog
  * @param {string|null} serverName
- *
  * @returns {string} A formatted string report.
  */
 exports.REPORT_COMMENT = ({ timestamp, In, Out, srcIp, dstIp, res, tos, prec, ttl, id, proto, spt, dpt, len, urgp, mac, window, syn }, fullLog, serverName) => {
