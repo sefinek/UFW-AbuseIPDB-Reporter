@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const { CACHE_FILE, REPORT_INTERVAL } = require('../config.js').MAIN;
-const log = require('./log.js');
+const log = require('../utils/log.js');
 
 const reportedIPs = new Map();
 

@@ -1,9 +1,10 @@
 const fs = require('node:fs');
 const chokidar = require('chokidar');
-const isLocalIP = require('./utils/isLocalIP.js');
-const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./utils/cache.js');
+const isLocalIP = require('./services/isLocalIP.js');
+const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./services/cache.js');
 const log = require('./utils/log.js');
 const axios = require('./services/axios.js');
+const getServerIP = require('./services/serverIp.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
 const { UFW_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
@@ -42,6 +43,11 @@ const processLogLine = async line => {
 	const { srcIp, proto, dpt } = match;
 	if (!srcIp) {
 		log(1, `Missing SRC in log line: ${line}`);
+		return;
+	}
+
+	if (srcIp === getServerIP()) {
+		log(0, 'Ignoring own IP');
 		return;
 	}
 
