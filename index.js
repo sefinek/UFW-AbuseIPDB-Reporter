@@ -69,7 +69,7 @@ const processLogLine = async line => {
 	// TCP connections can only be reported if they complete the three-way handshake. UDP connections cannot be reported.
 	// More: https://www.abuseipdb.com/reporting-policy
 	if (proto === 'UDP') {
-		log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}"`);
+		log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`);
 		return;
 	}
 
