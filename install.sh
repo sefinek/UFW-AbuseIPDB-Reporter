@@ -109,13 +109,13 @@ case $answer in
 esac
 
 # Clone repository
-cd /home || exit
+cd ~ || exit
 if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📂 Cloning the UFW-AbuseIPDB-Reporter repository..."
     git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js
 else
     echo "📂 The UFW-AbuseIPDB-Reporter repository already exists. Pulling latest changes..."
-    cd UFW-AbuseIPDB-Reporter || exit
+    cd ~/UFW-AbuseIPDB-Reporter || exit
     git pull
 fi
 
