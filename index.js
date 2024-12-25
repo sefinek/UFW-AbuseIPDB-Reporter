@@ -20,7 +20,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 		log(0, `Successfully reported ${logData.srcIp} (${logData.dpt}/${logData.proto}); Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		log(2, `${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
+		log(2, `Failed to report ${logData.srcIp} (${logData.dpt}/${logData.proto}); ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
 		return false;
 	}
 };
