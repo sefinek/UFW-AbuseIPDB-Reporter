@@ -2,6 +2,9 @@
 A utility designed to analyze UFW firewall logs and report malicious IP addresses to the [AbuseIPDB](https://www.abuseipdb.com) database.  
 To prevent redundant reporting of the same IP address within a short period, the tool uses a temporary cache file to track previously reported IPs.
 
+This project was previously written in Bash, but it has been rewritten in [Node.js](https://nodejs.org). All my integration tools are currently written in Node, hence the change.
+If you were using the old version, uninstall it as it will no longer be supported.
+
 If you like this repository or find it useful, I would greatly appreciate it if you could give it a star ⭐. Thanks a lot!  
 See also this: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/Cloudflare-WAF-To-AbuseIPDB)
 
