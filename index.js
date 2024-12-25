@@ -93,7 +93,7 @@ const processLogLine = async line => {
 		return;
 	}
 
-	const categories = config.DETERMINE_CATEGORIES(proto, dpt);
+	const categories = config.DETERMINE_CATEGORIES(logData);
 	const comment = config.REPORT_COMMENT(logData, line, SERVER_ID);
 
 	if (await reportToAbuseIPDb(logData, categories, comment)) {

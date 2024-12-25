@@ -74,4 +74,4 @@ const categories = {
 	},
 };
 
-exports.DETERMINE_CATEGORIES = (proto, dpt) => categories[proto]?.[dpt] || '14'; // Default: Port Scan
+exports.DETERMINE_CATEGORIES = ({ proto, dpt }) => categories[proto]?.[dpt] || '14'; // Default: Port Scan
