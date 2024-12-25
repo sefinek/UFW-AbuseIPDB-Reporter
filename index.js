@@ -11,13 +11,13 @@ const { UFW_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
 
 let fileOffset = 0;
 
-const reportToAbuseIPDb = async (ip, categories, comment) => {
+const reportToAbuseIPDb = async (logData, categories, comment) => {
 	try {
-		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip, categories, comment }), {
+		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip: logData.ip, categories, comment }), {
 			headers: { 'Key': ABUSEIPDB_API_KEY },
 		});
 
-		log(0, `Successfully reported IP ${ip} (abuse: ${data.data.abuseConfidenceScore}%)`);
+		log(0, `Successfully reported ${logData.srcIp} (${logData.dpt}/${logData.proto}) with categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
 		log(2, `${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
@@ -96,9 +96,7 @@ const processLogLine = async line => {
 	const categories = config.DETERMINE_CATEGORIES(proto, dpt);
 	const comment = config.REPORT_COMMENT(logData, line, SERVER_ID);
 
-	log(0, `Reporting ${srcIp} (${dpt}/${proto}) with categories: ${categories}`);
-
-	if (await reportToAbuseIPDb(srcIp, categories, comment)) {
+	if (await reportToAbuseIPDb(logData, categories, comment)) {
 		markIPAsReported(srcIp);
 		saveReportedIPs();
 	}
