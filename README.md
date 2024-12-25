@@ -35,12 +35,13 @@ pm2 startup
 pm2 save
 ```
 
-## Migration from the bash version
+## 🗑️ Remove the old version
 ```bash
 sudo systemctl stop abuseipdb-ufw.service
 sudo systemctl disable abuseipdb-ufw.service
 sudo rm /etc/systemd/system/abuseipdb-ufw.service
 sudo systemctl daemon-reload
+sudo rm -r /usr/local/bin/UFW-AbuseIPDB-Reporter
 ```
 
 
