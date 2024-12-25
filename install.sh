@@ -180,10 +180,10 @@ pm2 save
 
 
 # Final
-echo "🌌 Checking PM2 status..."
+echo -e "\n\n🌌 Checking PM2 status..."
 pm2 status
 
-echo -e "\n\n🎉 Installation and configuration completed!"
+echo -e "\n🎉 Installation and configuration completed!"
 
 echo -e "\n====================================== Summary ======================================"
 echo "🔑 API Token     : $api_token"
