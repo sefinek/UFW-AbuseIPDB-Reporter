@@ -17,7 +17,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 			headers: { 'Key': ABUSEIPDB_API_KEY },
 		});
 
-		log(0, `Successfully reported ${logData.srcIp} (${logData.dpt}/${logData.proto}); Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
+		log(0, `Reported ${logData.srcIp} (${logData.dpt}/${logData.proto}); Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
 		log(2, `Failed to report ${logData.srcIp} (${logData.dpt}/${logData.proto}); ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
@@ -89,7 +89,7 @@ const processLogLine = async line => {
 			(seconds || !days && !hours && !minutes) && `${seconds}s`,
 		].filter(Boolean).join(' ');
 
-		log(0, `IP ${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`);
+		log(0, `${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`);
 		return;
 	}
 
