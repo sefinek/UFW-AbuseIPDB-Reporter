@@ -20,6 +20,7 @@ See also this: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/
 
 ## 📥 Installation
 ```bash
+sudo apt update && sudo apt upgrade
 cd ~
 git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git
 cd UFW-AbuseIPDB-Reporter
