@@ -157,7 +157,7 @@ echo "🗑️ Uninstalling corepack..."
 npm uninstall corepack -g --silent
 
 # Install pm2
-echo "📦 Installing pm2..."
+echo "📦 Installing PM2..."
 npm install pm2 -g --silent
 
 # Create logs directory
@@ -166,7 +166,7 @@ mkdir -p /var/log/ufw-abuseipdb
 chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
 
 # Configure pm2
-echo "⚙️ Configuring pm2..."
+echo "⚙️ Configuring PM2..."
 pm2 start
 pm2 startup
 
@@ -178,7 +178,9 @@ pm2 save
 
 
 # Final
+echo "🌌 Checking PM2 status..."
 pm2 status
+
 echo -e "\n\n🎉 Installation and configuration completed!"
 
 echo -e "\n====================================== Summary ======================================"
