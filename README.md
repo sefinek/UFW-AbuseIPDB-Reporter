@@ -19,8 +19,24 @@ See also this: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/
 
 
 ## 📥 Installation
+
+### Node.js (Ubuntu & Debian)
 ```bash
-sudo apt update && sudo apt upgrade
+sudo apt-get install -y curl
+curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+sudo -E bash nodesource_setup.sh
+sudo apt-get install -y nodejs
+```
+
+### Git
+```bash
+sudo add-apt-repository ppa:git-core/ppa
+sudo apt-get update && sudo apt-get -y install git 
+```
+
+### Script
+```bash
+sudo apt-get update && sudo apt-get upgrade
 cd ~
 git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git
 cd UFW-AbuseIPDB-Reporter
