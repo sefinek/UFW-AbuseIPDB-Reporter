@@ -34,7 +34,7 @@ check_dependencies() {
             esac
         done
     else
-        echo "✅ All dependencies are installed."
+        echo "✅ All dependencies are installed!"
     fi
 }
 
@@ -97,7 +97,7 @@ read -r -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? 
 case $answer in
     [Yy]*|[Yy]es )
         echo "🔧 Updating and upgrading the system..."
-        apt-get update && apt-get upgrade -y
+        apt-get update > /dev/null 2>&1 && apt-get upgrade
         ;;
     [Nn]*|[Nn]o )
         echo "⏩ Skipping system update and upgrade..."
@@ -123,10 +123,12 @@ if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
     git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
-    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists! Pulling latest changes..."
-    cd UFW-AbuseIPDB-Reporter || { echo "❌ Failed to change directory to 'UFW-AbuseIPDB-Reporter'. Exiting..."; exit 1; }
-    git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
+    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists!"
 fi
+
+echo "📥 Pulling latest changes..."
+cd UFW-AbuseIPDB-Reporter || { echo "❌ Failed to change directory to 'UFW-AbuseIPDB-Reporter'. Exiting..."; exit 1; }
+git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
 
 # Install npm dependencies
 echo "📦 Installing npm dependencies..."
