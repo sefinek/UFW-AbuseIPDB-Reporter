@@ -121,8 +121,8 @@ const processLogLine = async line => {
 		.on('change', path => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
-				log(1, 'File truncated. Resetting offset...');
 				fileOffset = 0;
+				log(1, 'The file has been truncated, and the offset has been reset.');
 			}
 
 			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' }).on('data', chunk => {
