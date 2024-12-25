@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Ensure the script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "❌ This script must be run as root. Exiting..."
+  exit 1
+fi
+
 # Function to check and install missing dependencies
 check_dependencies() {
     local dependencies=(curl node git)
@@ -18,9 +24,9 @@ check_dependencies() {
             case $answer in
                 [Yy]*|[Yy]es )
                     case $dep in
-                        curl ) sudo apt-get install -y curl ;;
-                        node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && sudo -E bash nodesource_setup.sh && sudo apt-get install -y nodejs ;;
-                        git ) sudo add-apt-repository ppa:git-core/ppa && sudo apt-get update && sudo apt-get -y install git ;;
+                        curl ) apt-get install -y curl ;;
+                        node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && bash nodesource_setup.sh && apt-get install -y nodejs && rm nodesource_setup.sh -f ;;
+                        git ) add-apt-repository ppa:git-core/ppa && apt-get update && apt-get -y install git ;;
                     esac
                     ;;
                 [Nn]*|[Nn]o )
@@ -90,7 +96,7 @@ read -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? [Ye
 case $answer in
     [Yy]*|[Yy]es )
         echo "🔧 Updating and upgrading the system..."
-        sudo apt-get update && sudo apt-get upgrade -y
+        apt-get update && apt-get upgrade -y
         ;;
     [Nn]*|[Nn]o )
         echo "⏩ Skipping system update and upgrade..."
@@ -134,7 +140,7 @@ fi
 
 # Change permissions for UFW log file
 echo "🔒 Changing permissions for $ufw_log_path..."
-sudo chmod 644 "$ufw_log_path"
+chmod 644 "$ufw_log_path"
 
 # Uninstall corepack
 echo "🗑️ Uninstalling corepack..."
@@ -146,8 +152,8 @@ npm install pm2 -g --silent
 
 # Create logs directory
 echo "📂 Creating /var/log/ufw-abuseipdb directory..."
-sudo mkdir -p /var/log/ufw-abuseipdb
-sudo chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
+mkdir -p /var/log/ufw-abuseipdb
+chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
 
 # Configure pm2
 echo "⚙️ Configuring pm2..."
@@ -164,13 +170,13 @@ echo "🎉 Installation and configuration completed!"
 
 
 # Final
-echo -e "\n=================================== Installation Summary ==================================="
+echo -e "\n====================================== Summary ======================================"
 echo "🔑 API Token     : $api_token"
 echo "🖥️ Server ID     : ${server_id:-null}"
 echo "📂 Script        : $PWD"
 echo "⚙️ Config File   : $PWD/config.js"
 
-echo -e "\n=================================== Support ==================================="
+echo -e "\n====================================== Support ======================================"
 echo "📩 Email         : contact@sefinek.net"
 echo "🔵 Discord       : https://discord.gg/RVH8UXgmzs"
 echo "😺 GitHub Issues : https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues"
