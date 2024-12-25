@@ -15,14 +15,16 @@ let fileOffset = 0;
 
 const reportToAbuseIPDb = async (logData, categories, comment) => {
 	try {
-		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip: logData.srcIp, categories, comment }), {
-			headers: { 'Key': ABUSEIPDB_API_KEY },
-		});
+		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
+			ip: logData.srcIp,
+			categories,
+			comment,
+		}), { headers: { 'Key': ABUSEIPDB_API_KEY } });
 
-		log(0, `Reported ${logData.srcIp} (${logData.dpt}/${logData.proto}); Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
+		log(0, `Reported ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		log(2, `Failed to report ${logData.srcIp} (${logData.dpt}/${logData.proto}); ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
+		log(2, `Failed to report ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
 		return false;
 	}
 };
@@ -30,25 +32,29 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 const processLogLine = async line => {
 	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring line: ${line}`);
 
+	const oldTime = line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0];
+	const timestampMatch = line.match(/\[(\d+\.\d+)\]/);
+	const newTime = timestampMatch ? parseFloat(timestampMatch[1]) : null;
 	const logData = {
-		timestamp: line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0] || null,
-		In:        line.match(/IN=([\d.]+)/)?.[1] || null,
-		Out:       line.match(/OUT=([\d.]+)/)?.[1] || null,
-		srcIp:     line.match(/SRC=([\d.]+)/)?.[1] || null,
-		dstIp:     line.match(/DST=([\d.]+)/)?.[1] || null,
-		res:       line.match(/RES=(\S+)/)?.[1] || null,
-		tos:       line.match(/TOS=(\S+)/)?.[1] || null,
-		prec:      line.match(/PREC=(\S+)/)?.[1] || null,
-		ttl:       line.match(/TTL=(\d+)/)?.[1] || null,
-		id:        line.match(/ID=(\d+)/)?.[1] || null,
-		proto:     line.match(/PROTO=(\S+)/)?.[1] || null,
-		spt:       line.match(/SPT=(\d+)/)?.[1] || null,
-		dpt:       line.match(/DPT=(\d+)/)?.[1] || null,
-		len:       line.match(/LEN=(\d+)/)?.[1] || null,
-		urgp:      line.match(/URGP=(\d+)/)?.[1] || null,
-		mac:       line.match(/MAC=([\w:]+)/)?.[1] || null,
-		window:    line.match(/WINDOW=(\d+)/)?.[1] || null,
-		syn:       !!line.includes('SYN'),
+		timestampOld: oldTime || null,
+		timestampNew: newTime || null,
+		In:           line.match(/IN=([\d.]+)/)?.[1] || null,
+		Out:          line.match(/OUT=([\d.]+)/)?.[1] || null,
+		srcIp:        line.match(/SRC=([\d.]+)/)?.[1] || null,
+		dstIp:        line.match(/DST=([\d.]+)/)?.[1] || null,
+		res:          line.match(/RES=(\S+)/)?.[1] || null,
+		tos:          line.match(/TOS=(\S+)/)?.[1] || null,
+		prec:         line.match(/PREC=(\S+)/)?.[1] || null,
+		ttl:          line.match(/TTL=(\d+)/)?.[1] || null,
+		id:           line.match(/ID=(\d+)/)?.[1] || null,
+		proto:        line.match(/PROTO=(\S+)/)?.[1] || null,
+		spt:          line.match(/SPT=(\d+)/)?.[1] || null,
+		dpt:          line.match(/DPT=(\d+)/)?.[1] || null,
+		len:          line.match(/LEN=(\d+)/)?.[1] || null,
+		urgp:         line.match(/URGP=(\d+)/)?.[1] || null,
+		mac:          line.match(/MAC=([\w:]+)/)?.[1] || null,
+		window:       line.match(/WINDOW=(\d+)/)?.[1] || null,
+		syn:          !!line.includes('SYN'),
 	};
 
 	const { srcIp, proto, dpt } = logData;
