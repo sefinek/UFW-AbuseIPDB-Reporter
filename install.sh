@@ -169,6 +169,7 @@ pm2 save
 
 
 # Final
+pm2 status
 echo -e "\n\n🎉 Installation and configuration completed!"
 
 echo -e "\n====================================== Summary ======================================"
