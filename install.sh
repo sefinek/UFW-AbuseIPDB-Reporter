@@ -86,10 +86,17 @@ while true; do
 done
 
 # Prompt for server ID
-read -r -p "🖥️ Enter your Server ID (leave blank for null): " server_id
-if [[ -z $server_id ]]; then
-    server_id=null
-fi
+while true; do
+    read -r -p "🖥️ Enter the server ID, leave blank if you do not wish to provide one (e.g., homeserver1): " server_id
+    if [[ -z $server_id ]]; then
+        server_id=null
+        break
+    elif [[ $server_id =~ ^[A-Za-z0-9]{1,16}$ ]]; then
+        break
+    else
+        echo "❌ It must be 1-16 characters long, contain only letters and numbers, and have no spaces or special characters."
+    fi
+done
 
 # Prompt for system update and upgrade
 read -r -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? [Yes/No]: " answer
