@@ -17,10 +17,6 @@ const fetchIPAddress = async () => {
 	}
 };
 
-if (process.env.NODE_ENV === 'production') {
-	(async () => fetchIPAddress())();
-} else {
-	address = '::ffff:127.0.0.1';
-}
+(async () => fetchIPAddress())();
 
 module.exports = () => address;
