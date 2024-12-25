@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# Ensure the script is run as root
-if [ "$EUID" -ne 0 ]; then
-  echo "❌ This script must be run as root. Exiting..."
-  exit 1
-fi
-
 # Function to check and install missing dependencies
 check_dependencies() {
     local dependencies=(curl node git)
