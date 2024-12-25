@@ -12,7 +12,7 @@ check_dependencies() {
     local missing=()
 
     for dependency in "${dependencies[@]}"; do
-        if ! command -v $dependency &> /dev/null; then
+        if ! command -v "$dependency" &> /dev/null; then
             missing+=("$dependency")
         fi
     done
@@ -20,12 +20,12 @@ check_dependencies() {
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo "🚨 Missing dependencies: ${missing[*]}"
         for dep in "${missing[@]}"; do
-            read -p "📦 Do you want to install $dep? [Yes/No]: " answer
+            read -r -p "📦 Do you want to install $dep? [Yes/No]: " answer
             case $answer in
                 [Yy]*|[Yy]es )
                     case $dep in
                         curl ) apt-get install -y curl ;;
-                        node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && bash nodesource_setup.sh && apt-get install -y nodejs && rm nodesource_setup.sh -f ;;
+                        node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && bash nodesource_setup.sh && apt-get install -y nodejs && rm -f nodesource_setup.sh ;;
                         git ) add-apt-repository ppa:git-core/ppa && apt-get update && apt-get -y install git ;;
                     esac
                     ;;
@@ -64,7 +64,7 @@ validate_token() {
 
 # Check for UFW log file
 if [[ ! -f /var/log/ufw.log ]]; then
-    read -p "🔍 /var/log/ufw.log not found. Please enter the path to your log file: " ufw_log_path
+    read -r -p "🔍 /var/log/ufw.log not found. Please enter the path to your log file: " ufw_log_path
     if [[ -f $ufw_log_path ]]; then
         echo "✅ Log file found at $ufw_log_path."
     else
@@ -78,7 +78,7 @@ fi
 
 # Prompt for AbuseIPDB API token
 while true; do
-    read -p "🔑 Please enter your AbuseIPDB API token: " api_token
+    read -r -p "🔑 Please enter your AbuseIPDB API token: " api_token
     if validate_token "$api_token"; then
         break
     fi
@@ -86,13 +86,13 @@ while true; do
 done
 
 # Prompt for server ID
-read -p "🖥️ Enter your Server ID (leave blank for null): " server_id
+read -r -p "🖥️ Enter your Server ID (leave blank for null): " server_id
 if [[ -z $server_id ]]; then
     server_id=null
 fi
 
 # Prompt for system update and upgrade
-read -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? [Yes/No]: " answer
+read -r -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? [Yes/No]: " answer
 case $answer in
     [Yy]*|[Yy]es )
         echo "🔧 Updating and upgrading the system..."
@@ -108,13 +108,13 @@ case $answer in
 esac
 
 # Clone repository
-cd /home
+cd /home || exit
 if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📂 Cloning the UFW-AbuseIPDB-Reporter repository..."
     git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js
 else
     echo "📂 The UFW-AbuseIPDB-Reporter repository already exists. Pulling latest changes..."
-    cd UFW-AbuseIPDB-Reporter
+    cd UFW-AbuseIPDB-Reporter || exit
     git pull
 fi
 
@@ -166,7 +166,7 @@ sudo env PATH="$PATH":/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd
 
 pm2 save
 
-echo "🎉 Installation and configuration completed!"
+echo -e "\n\n🎉 Installation and configuration completed!"
 
 
 # Final
