@@ -17,7 +17,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 			headers: { 'Key': ABUSEIPDB_API_KEY },
 		});
 
-		log(0, `Successfully reported ${logData.srcIp} (${logData.dpt}/${logData.proto}) with categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
+		log(0, `Successfully reported ${logData.srcIp} (${logData.dpt}/${logData.proto}); Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
 		log(2, `${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
