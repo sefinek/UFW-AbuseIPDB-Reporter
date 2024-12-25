@@ -166,10 +166,10 @@ sudo env PATH="$PATH":/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd
 
 pm2 save
 
-echo -e "\n\n🎉 Installation and configuration completed!"
-
 
 # Final
+echo -e "\n\n🎉 Installation and configuration completed!"
+
 echo -e "\n====================================== Summary ======================================"
 echo "🔑 API Token     : $api_token"
 echo "🖥️ Server ID     : ${server_id:-null}"
