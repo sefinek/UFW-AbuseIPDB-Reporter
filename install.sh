@@ -103,7 +103,7 @@ case $answer in
         echo "⏩ Skipping system update and upgrade..."
         ;;
     * )
-        echo "❌ Invalid input. Exiting..."
+        echo "❌ Confused. Invalid input. Expected Yes/no or Y/n."
         exit 1
         ;;
 esac
