@@ -111,7 +111,7 @@ esac
 # Clone repository
 if [ -d "/home" ]; then
     mkdir -p /home/new_directory
-    echo "✅ '/home/new_directory' has been created."
+    echo "📂 '/home/new_directory' has been created."
 else
     echo "❌ '/home' directory does not exist. Exiting..."
     exit 1
@@ -120,10 +120,10 @@ fi
 cd /home || { echo "❌ Failed to change directory to '/home'. Exiting..."; exit 1; }
 
 if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
-    echo "📂 Cloning the UFW-AbuseIPDB-Reporter repository..."
+    echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
     git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
-    echo "📂 The UFW-AbuseIPDB-Reporter repository already exists. Pulling latest changes..."
+    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists! Pulling latest changes..."
     cd UFW-AbuseIPDB-Reporter || { echo "❌ Failed to change directory to 'UFW-AbuseIPDB-Reporter'. Exiting..."; exit 1; }
     git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
 fi
