@@ -67,7 +67,7 @@ pm2 startup
 pm2 save
 ```
 
-## 🗑️ Remove the old version
+## 🗑️ Uninstall the deprecated version if you have it
 ```bash
 sudo systemctl stop abuseipdb-ufw.service
 sudo systemctl disable abuseipdb-ufw.service
