@@ -13,7 +13,7 @@ let fileOffset = 0;
 
 const reportToAbuseIPDb = async (logData, categories, comment) => {
 	try {
-		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip: logData.ip, categories, comment }), {
+		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({ ip: logData.srcIp, categories, comment }), {
 			headers: { 'Key': ABUSEIPDB_API_KEY },
 		});
 
