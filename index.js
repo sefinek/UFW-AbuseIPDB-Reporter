@@ -130,6 +130,8 @@ const processLogLine = async line => {
 			});
 		});
 
+	if (process?.send) process.send('ready');
+
 	log(0, `Ready! Now monitoring: ${UFW_FILE}`);
 	log(0, '=====================================================================');
 })();
