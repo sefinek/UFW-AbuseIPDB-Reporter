@@ -1,3 +1,5 @@
+// Copyright 2024 © by Sefinek. All rights reserved.
+
 const fs = require('node:fs');
 const chokidar = require('chokidar');
 const isLocalIP = require('./services/isLocalIP.js');
