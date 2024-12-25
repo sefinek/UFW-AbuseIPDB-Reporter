@@ -35,6 +35,14 @@ pm2 startup
 pm2 save
 ```
 
+## Migration from the bash version
+```bash
+sudo systemctl stop abuseipdb-ufw.service
+sudo systemctl disable abuseipdb-ufw.service
+sudo rm /etc/systemd/system/abuseipdb-ufw.service
+sudo systemctl daemon-reload
+```
+
 
 ## 🖥️ Usage
 After successful installation, the script will run continuously in the background, monitoring UFW logs and automatically reporting malicious IP addresses.
