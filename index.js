@@ -14,6 +14,9 @@ const config = require('./config.js');
 const { version } = require('./package.json');
 const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
 
+// Updates
+require('./update.js');
+
 let fileOffset = 0;
 
 const reportToAbuseIPDb = async (logData, categories, comment) => {

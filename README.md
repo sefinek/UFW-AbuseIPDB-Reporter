@@ -20,12 +20,12 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 
 ## ✅ Features
-1. A `config.js` file enabling easy configuration.
+1. A [`config.js`](default.config.js) file enabling easy configuration.
 2. A simple installer allowing quick integration deployment.
 3. Integration with Discord Webhooks (coming soon):
     - Alerts in case of script errors
     - Daily summaries of reported IP addresses
-
+4. Automatic updates.
 
 ## 📥 Installation
 

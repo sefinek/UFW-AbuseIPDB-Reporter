@@ -9,6 +9,10 @@ exports.MAIN = {
 	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
 
+	// Automatic updates
+	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // Schedule for automatic script updates (CRON format). Default: every day at 18:00
+	AUTO_UPDATE_ENABLED: true, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
+
 	// Project
 	GITHUB_REPO: 'https://github.com/sefinek/UFW-AbuseIPDB-Reporter', // If you are using a fork, provide the link to the forked repository here.
 };

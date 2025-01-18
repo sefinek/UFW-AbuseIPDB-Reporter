@@ -1,7 +1,7 @@
 const os = require('node:os');
 const axios = require('./axios.js');
 const isLocalIP = require('../utils/isLocalIP.js');
-const { MAIN } = require('../config.js');
+const { REFRESHING_IP_ADDRESS } = require('../config.js').MAIN;
 
 const ipAddressList = new Set();
 
@@ -20,9 +20,7 @@ const fetchIPv6Address = () => {
 	Object.values(networkInterfaces).forEach(interfaces => {
 		interfaces.forEach(details => {
 			const ip = details.address;
-			if (!details.internal && ip && !isLocalIP(ip)) {
-				ipAddressList.add(ip);
-			}
+			if (!details.internal && ip && !isLocalIP(ip)) ipAddressList.add(ip);
 		});
 	});
 };
@@ -35,7 +33,7 @@ const fetchIPAddress = async () => {
 
 (async () => {
 	await fetchIPAddress();
-	setInterval(fetchIPAddress, MAIN.REFRESHING_IP_ADDRESS);
+	setInterval(fetchIPAddress, REFRESHING_IP_ADDRESS);
 
 	// console.debug(ipAddressList);
 })();
