@@ -29,7 +29,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 ## 📥 Installation
 
-### Automatic (Easy & recommenced)
+### Automatic (easy & recommenced)
 #### Via curl
 ```bash
 cd /tmp && curl -s -o /tmp/install.sh https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh && sudo bash install.sh && rm install.sh
