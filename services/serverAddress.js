@@ -33,8 +33,6 @@ const fetchIPAddress = async () => {
 (async () => {
 	await fetchIPAddress();
 	setInterval(fetchIPAddress, 25 * 1000);
-
-	console.log(ipAddressList);
 })();
 
 module.exports = () => [...ipAddressList];
