@@ -32,12 +32,12 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 ### Automatic (easy & recommenced)
 #### Via curl
 ```bash
-cd /tmp && curl -s -o /tmp/install.sh https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh && bash install.sh && rm install.sh
+bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
 #### Via wget
 ```bash
-cd /tmp && wget -q -O /tmp/install.sh https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh && bash install.sh && rm install.sh
+bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
 ### Manually
