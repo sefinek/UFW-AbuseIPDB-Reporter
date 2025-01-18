@@ -41,7 +41,7 @@ cd /tmp && wget -q -O /tmp/install.sh https://raw.githubusercontent.com/sefinek/
 ```
 
 ### Manually
-#### Node.js (Ubuntu & Debian)
+#### Node.js installation (Ubuntu & Debian)
 ```bash
 sudo apt-get install -y curl
 curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
@@ -49,7 +49,7 @@ sudo -E bash nodesource_setup.sh
 sudo apt-get install -y nodejs
 ```
 
-#### Git
+#### Git installation
 ```bash
 sudo add-apt-repository ppa:git-core/ppa
 sudo apt-get update && sudo apt-get -y install git 
