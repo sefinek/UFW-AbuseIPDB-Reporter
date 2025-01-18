@@ -8,9 +8,8 @@ If you were using the old version, please [uninstall it](https://github.com/sefi
 If you like this repository or find it useful, I’d greatly appreciate it if you could give it a star ⭐. Many thanks!  
 Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/Cloudflare-WAF-To-AbuseIPDB)
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > - If you'd like to make changes to any files in this repository, please start by creating a [public fork](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/fork).
->
 > - According to AbuseIPDB's policy, UDP traffic should not be reported!
 
 
