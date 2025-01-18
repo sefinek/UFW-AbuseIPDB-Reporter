@@ -56,15 +56,24 @@ check_dependencies
 # Function to validate AbuseIPDB API key
 validate_token() {
     local api_key=$1
+    local api_url="https://api.abuseipdb.com/api/v2/check?ipAddress=8.8.8.8"
     local response
 
-    response=$(curl -s -o /dev/null -w "%{http_code}" -H "Key: $api_key" https://api.abuseipdb.com/api/v2/check?ipAddress=8.8.8.8)
+    if command -v curl &>/dev/null; then
+        response=$(curl -s -o /dev/null -w "%{http_code}" -H "Key: $api_key" "$api_url")
+    elif command -v wget &>/dev/null; then
+        response=$(wget --quiet --server-response --header="Key: $api_key" --output-document=/dev/null "$api_url" 2>&1 | awk '/HTTP\/1\.[01] [0-9]{3}/ {print $2}' | tail -n1)
+    else
+        echo "❌ Neither curl nor wget is installed. Please install one of them to proceed."
+        exit 1
+    fi
 
     if [[ $response -eq 200 ]]; then
+        echo "✅ Yay! Token is valid."
         return 0
     else
-        echo "🚨 Invalid token. Please try again."
-        return 1
+        echo "🚨 Invalid token or an error occurred! Please try again."
+        exit 1
     fi
 }
 
