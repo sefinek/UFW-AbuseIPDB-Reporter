@@ -2,7 +2,7 @@
 A utility designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
 To prevent excessive reporting of the same IP address within a short period, the tool uses a temporary cache file to track previously reported IP addresses.
 
-This project was previously written in Bash but has been rewritten in [Node.js](https://nodejs.org). All my integration tools are now written in Node, hence this change.
+This project was originally written in Bash but has been rewritten in [Node.js](https://nodejs.org). All my integration tools are now written in Node, hence this change.
 If you were using the old version, please [uninstall it](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/tree/node.js?tab=readme-ov-file#%EF%B8%8F-remove-the-old-version) as it will no longer be supported.
 
 If you like this repository or find it useful, I’d greatly appreciate it if you could give it a star ⭐. Many thanks!  
