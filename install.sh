@@ -111,7 +111,7 @@ esac
 # Clone repository
 if [ -d "/home" ]; then
     mkdir -p /home/new_directory
-    echo "📂 '/home/new_directory' has been created."
+    echo "📂 '/home/new_directory' has been created"
 else
     echo "❌ '/home' directory does not exist. Exiting..."
     exit 1
