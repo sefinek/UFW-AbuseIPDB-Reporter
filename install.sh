@@ -226,7 +226,7 @@ else
 fi
 
 echo "⚙️ Running PM2 save..."
-pm2 save
+pm2 save --silent
 
 
 # Final
