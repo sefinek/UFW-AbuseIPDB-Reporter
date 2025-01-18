@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+# Function to prompt for a Yes/no answer
+yes_no_prompt() {
+    local prompt="$1"
+    while true; do
+        read -r -p "$prompt [Yes/no]: " answer
+        case $answer in
+            [Yy]*|[Yy]es ) return 0 ;;  # Return 0 for Yes
+            [Nn]*|[Nn]o ) return 1 ;;   # Return 1 for No
+            * ) echo "❌ Invalid input. Please answer Yes/no or Y/n." ;;
+        esac
+    done
+}
+
 # Function to check and install missing dependencies
 check_dependencies() {
     local dependencies=(curl node git)
@@ -8,30 +21,29 @@ check_dependencies() {
     for dependency in "${dependencies[@]}"; do
         if ! command -v "$dependency" &> /dev/null; then
             missing+=("$dependency")
+        else
+            echo "✅ $dependency is installed ($(command -v "$dependency"))"
+            if $dependency --version &> /dev/null; then
+                $dependency --version
+            else
+                echo "ℹ️ Version information for $dependency is unavailable"
+            fi
         fi
     done
 
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo "🚨 Missing dependencies: ${missing[*]}"
         for dep in "${missing[@]}"; do
-            read -r -p "📦 Do you want to install $dep? [Yes/No]: " answer
-            case $answer in
-                [Yy]*|[Yy]es )
-                    case $dep in
-                        curl ) apt-get install -y curl ;;
-                        node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && bash nodesource_setup.sh && apt-get install -y nodejs && rm -f nodesource_setup.sh ;;
-                        git ) add-apt-repository ppa:git-core/ppa && apt-get update && apt-get -y install git ;;
-                    esac
-                    ;;
-                [Nn]*|[Nn]o )
-                    echo "❌ Cannot proceed without $dep. Exiting..."
-                    exit 1
-                    ;;
-                * )
-                    echo "❌ Invalid input. Exiting..."
-                    exit 1
-                    ;;
-            esac
+            if yes_no_prompt "📦 Do you want to install $dep?"; then
+                case $dep in
+                    curl ) apt-get install -y curl ;;
+                    node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && bash nodesource_setup.sh && apt-get install -y nodejs && rm -f nodesource_setup.sh ;;
+                    git ) add-apt-repository ppa:git-core/ppa && apt-get update && apt-get -y install git ;;
+                esac
+            else
+                echo "❌ Cannot proceed without $dep. Exiting..."
+                exit 1
+            fi
         done
     else
         echo "✅ All dependencies are installed"
@@ -93,20 +105,12 @@ while true; do
 done
 
 # Prompt for system update and upgrade
-read -r -p "🛠️ Do you want the script to run apt update and apt upgrade for you? [Yes/No]: " answer
-case $answer in
-    [Yy]*|[Yy]es )
-        echo "🔧 Updating and upgrading the system..."
-        apt-get update > /dev/null 2>&1 && apt-get upgrade
-        ;;
-    [Nn]*|[Nn]o )
-        echo "⏩ Skipping system update and upgrade..."
-        ;;
-    * )
-        echo "❌ Confused. Invalid input. Expected Yes/no or Y/n."
-        exit 1
-        ;;
-esac
+if yes_no_prompt "🛠️ Do you want the script to run apt update and apt upgrade for you?"; then
+    echo "🔧 Updating and upgrading the system..."
+    apt-get update > /dev/null 2>&1 && apt-get upgrade
+else
+    echo "⏩ Skipping system update and upgrade..."
+fi
 
 # Clone repository
 if [ -d "/home" ]; then
