@@ -193,7 +193,7 @@ pm2 save
 echo -e "\n\n🌌 Checking PM2 status..."
 pm2 status
 
-echo -e "\n🎉 Installation and configuration completed!"
+echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' command to monitor logs in real time."
 
 echo -e "\n====================================== Summary ======================================"
 echo "🖥️ Server ID     : ${server_id:-null}"
