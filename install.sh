@@ -4,8 +4,6 @@
 # Copyright 2024-2025 (c) by Sefinek All rights reserved.
 ##################################################################
 
-DATE="18.01.2025" # DD.MM.YYYY
-
 cat << "EOF"
               _      _                            ___   ____    ____    ____
              / \    | |__    _   _   ___    ___  |_ _| |  _ \  |  _ \  | __ )
@@ -19,10 +17,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-EOF
-
-cat <<EOF
-                      >> Made by sefinek.net || Date: $DATE <<
+                      >> Made by sefinek.net || Date: 18.01.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
