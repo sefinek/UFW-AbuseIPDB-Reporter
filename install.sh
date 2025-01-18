@@ -64,7 +64,7 @@ validate_token() {
     elif command -v wget &>/dev/null; then
         response=$(wget --quiet --server-response --header="Key: $api_key" --output-document=/dev/null "$api_url" 2>&1 | awk '/HTTP\/1\.[01] [0-9]{3}/ {print $2}' | tail -n1)
     else
-        echo "❌ Neither curl nor wget is installed. Please install one of them to proceed."
+        echo "🚨 Neither curl nor wget is installed. Please install one of them to proceed."
         exit 1
     fi
 
@@ -72,7 +72,7 @@ validate_token() {
         echo "✅ Yay! Token is valid."
         return 0
     else
-        echo "🚨 Invalid token or an error occurred! Please try again."
+        echo "❌ Invalid token! Please try again."
         validate_token
     fi
 }
