@@ -24,17 +24,17 @@ check_dependencies() {
                     esac
                     ;;
                 [Nn]*|[Nn]o )
-                    echo "❌ Cannot proceed without $dep. Exiting."
+                    echo "❌ Cannot proceed without $dep. Exiting..."
                     exit 1
                     ;;
                 * )
-                    echo "❌ Invalid input. Exiting."
+                    echo "❌ Invalid input. Exiting..."
                     exit 1
                     ;;
             esac
         done
     else
-        echo "✅ All dependencies are installed!"
+        echo "✅ All dependencies are installed"
     fi
 }
 
@@ -62,12 +62,12 @@ if [[ ! -f /var/log/ufw.log ]]; then
     if [[ -f $ufw_log_path ]]; then
         echo "✅ Log file found at $ufw_log_path."
     else
-        echo "❌ Provided log file path does not exist. Exiting."
+        echo "❌ Provided log file path does not exist. Exiting..."
         exit 1
     fi
 else
     ufw_log_path="/var/log/ufw.log"
-    echo "✅ /var/log/ufw.log exists."
+    echo "✅ /var/log/ufw.log exists"
 fi
 
 # Prompt for AbuseIPDB API token
@@ -81,7 +81,7 @@ done
 
 # Prompt for server ID
 while true; do
-    read -r -p "🖥️ Enter the server ID, leave blank if you do not wish to provide one (e.g., homeserver1): " server_id
+    read -r -p "🖥️ Enter the server ID. Leave blank if you do not wish to provide one (e.g., homeserver1): " server_id
     if [[ -z $server_id ]]; then
         server_id=null
         break
@@ -93,7 +93,7 @@ while true; do
 done
 
 # Prompt for system update and upgrade
-read -r -p "🛠️ Do you want to update and upgrade the system (apt upgrade)? [Yes/No]: " answer
+read -r -p "🛠️ Do you want the script to run apt update and apt upgrade for you? [Yes/No]: " answer
 case $answer in
     [Yy]*|[Yy]es )
         echo "🔧 Updating and upgrading the system..."
