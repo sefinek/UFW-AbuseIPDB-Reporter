@@ -2,7 +2,7 @@ exports.MAIN = {
 	// Server
 	UFW_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
-	SERVER_ID: null, // The server name that will be visible in the reports (e.g. 'homeserver01'). If you don't want to define it, leave the value as null.
+	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver01'). If you don't want to define it, leave the value as null.
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '',
