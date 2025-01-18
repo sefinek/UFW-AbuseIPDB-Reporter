@@ -160,7 +160,7 @@ if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
     sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
-    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists!"
+    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists"
 fi
 
 sudo chown "$USER":"$USER" /opt/UFW-AbuseIPDB-Reporter -R
@@ -175,7 +175,7 @@ npm install -silent
 
 # Copy configuration file
 if [ -e config.js ]; then
-  echo "✅ config.js already exists. Skipping copy..."
+  echo "✅ config.js already exists"
 else
   echo "📑 Copying default.config.js to config.js..."
   cp default.config.js config.js
