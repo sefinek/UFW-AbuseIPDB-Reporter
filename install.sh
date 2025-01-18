@@ -102,7 +102,7 @@ done
 
 # Prompt for server ID
 while true; do
-    read -r -p "🖥️ Enter the server ID. Leave blank if you do not wish to provide one (e.g., homeserver1): " server_id
+    read -r -p "🖥️ Enter the server ID (e.g., homeserver1). Leave blank if you do not wish to provide one: " server_id
     if [[ -z $server_id ]]; then
         server_id=null
         break
