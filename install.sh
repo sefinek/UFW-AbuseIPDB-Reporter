@@ -73,7 +73,7 @@ validate_token() {
         return 0
     else
         echo "🚨 Invalid token or an error occurred! Please try again."
-        exit 1
+        validate_token
     fi
 }
 
