@@ -168,11 +168,11 @@ sudo chmod 644 "$ufw_log_path"
 
 # Uninstall corepack
 echo "🗑️ Uninstalling corepack..."
-sudo npm uninstall corepack -g
+sudo npm uninstall corepack -g -silent
 
 # Install pm2
 echo "📦 Installing PM2..."
-sudo npm install pm2 -g
+sudo npm install pm2 -g -silent
 
 # Create logs directory
 echo "📂 Creating /var/log/ufw-abuseipdb directory..."
