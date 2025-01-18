@@ -1,12 +1,13 @@
 exports.MAIN = {
-	// Server
-	UFW_FILE: '/var/log/ufw.log',
+	// This server
+	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
 	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver01'). If you don't want to define it, leave the value as null.
+	REFRESHING_IP_ADDRESS: 5 * 60 * 1000, // How often should (every 5 minutes) the script check the server's IP address to avoid accidental self-reports?
 
 	// Reporting
-	ABUSEIPDB_API_KEY: '',
-	REPORT_INTERVAL: 12 * 60 * 60 * 1000, // 12h
+	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
+	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
 
 	// Project
 	GITHUB_REPO: 'https://github.com/sefinek/UFW-AbuseIPDB-Reporter', // If you are using a fork, provide the link to the forked repository here.

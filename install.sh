@@ -185,7 +185,7 @@ fi
 config_file="config.js"
 if [[ -f $config_file ]]; then
     echo "🔧 Updating $PWD/$config_file..."
-    sed -i "s|UFW_FILE: .*|UFW_FILE: '$ufw_log_path',|" $config_file
+    sed -i "s|UFW_LOG_FILE: .*|UFW_LOG_FILE: '$ufw_log_path',|" $config_file
     sed -i "s|SERVER_ID: .*|SERVER_ID: '$server_id',|" $config_file
     sed -i "s|ABUSEIPDB_API_KEY: .*|ABUSEIPDB_API_KEY: '$api_token',|" $config_file
 else

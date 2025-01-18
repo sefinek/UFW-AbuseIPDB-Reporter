@@ -1,5 +1,5 @@
 const fs = require('node:fs');
-const { CACHE_FILE, REPORT_INTERVAL } = require('../config.js').MAIN;
+const { CACHE_FILE, IP_REPORT_COOLDOWN } = require('../config.js').MAIN;
 const log = require('../utils/log.js');
 
 const reportedIPs = new Map();
@@ -22,7 +22,7 @@ const saveReportedIPs = () => fs.writeFileSync(CACHE_FILE, Array.from(reportedIP
 
 const isIPReportedRecently = ip => {
 	const reportedTime = reportedIPs.get(ip);
-	return reportedTime && (Date.now() / 1000 - reportedTime < REPORT_INTERVAL / 1000);
+	return reportedTime && (Date.now() / 1000 - reportedTime < IP_REPORT_COOLDOWN / 1000);
 };
 
 const markIPAsReported = ip => reportedIPs.set(ip, Math.floor(Date.now() / 1000));

@@ -1,6 +1,7 @@
 const os = require('node:os');
 const axios = require('./axios.js');
-const isLocalIP = require('./isLocalIP.js');
+const isLocalIP = require('../utils/isLocalIP.js');
+const { MAIN } = require('../config.js');
 
 const ipAddressList = new Set();
 
@@ -34,7 +35,7 @@ const fetchIPAddress = async () => {
 
 (async () => {
 	await fetchIPAddress();
-	setInterval(fetchIPAddress, 25 * 1000);
+	setInterval(fetchIPAddress, MAIN.REFRESHING_IP_ADDRESS);
 
 	// console.debug(ipAddressList);
 })();

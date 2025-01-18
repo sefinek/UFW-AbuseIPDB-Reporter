@@ -1,27 +1,30 @@
-// Copyright 2024 © by Sefinek. All rights reserved.
+//
+//   Copyright 2024-2025 (c) by Sefinek All rights reserved.
+//                     https://sefinek.net
+//
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
-const isLocalIP = require('./services/isLocalIP.js');
+const isLocalIP = require('./utils/isLocalIP.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./services/cache.js');
 const log = require('./utils/log.js');
 const axios = require('./services/axios.js');
 const serverAddress = require('./services/serverAddress.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
-const { UFW_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
+const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
 
 let fileOffset = 0;
 
 const reportToAbuseIPDb = async (logData, categories, comment) => {
 	try {
-		const { data } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
+		const { data: res } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
 			ip: logData.srcIp,
 			categories,
 			comment,
 		}), { headers: { 'Key': ABUSEIPDB_API_KEY } });
 
-		log(0, `Reported ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; Categories ${categories}; Abuse: ${data.data.abuseConfidenceScore}%`);
+		log(0, `Reported ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; Categories ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
 		log(2, `Failed to report ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
@@ -111,19 +114,18 @@ const processLogLine = async line => {
 };
 
 (async () => {
-	log(0, `* Version: ${version}`);
-	log(0, `* Repository: ${GITHUB_REPO}`);
+	log(0, `v${version} (${GITHUB_REPO})`);
 
 	loadReportedIPs();
 
-	if (!fs.existsSync(UFW_FILE)) {
-		log(2, `Log file ${UFW_FILE} does not exist.`);
+	if (!fs.existsSync(UFW_LOG_FILE)) {
+		log(2, `Log file ${UFW_LOG_FILE} does not exist.`);
 		return;
 	}
 
-	fileOffset = fs.statSync(UFW_FILE).size;
+	fileOffset = fs.statSync(UFW_LOG_FILE).size;
 
-	chokidar.watch(UFW_FILE, { persistent: true, ignoreInitial: true })
+	chokidar.watch(UFW_LOG_FILE, { persistent: true, ignoreInitial: true })
 		.on('change', path => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
@@ -140,6 +142,6 @@ const processLogLine = async line => {
 
 	if (process?.send) process.send('ready');
 
-	log(0, `Ready! Now monitoring: ${UFW_FILE}`);
+	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
 	log(0, '=====================================================================');
 })();
