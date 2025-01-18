@@ -117,8 +117,6 @@ done
 if yes_no_prompt "🛠️ Do you want the script to run apt update and apt upgrade for you?"; then
     echo "🔧 Updating and upgrading the system..."
     apt-get update && apt-get upgrade
-else
-    echo "⏩ Skipping system update and upgrade..."
 fi
 
 # Clone repository
