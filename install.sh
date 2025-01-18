@@ -230,7 +230,7 @@ pm2 save --silent
 
 
 # Final
-echo -e "\n\n🌌 Checking PM2 status..."
+echo "🌌 Checking PM2 status..."
 pm2 status
 
 echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' command to monitor logs in real time."
