@@ -202,10 +202,6 @@ sudo chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
 echo "🔒 Changing permissions for $ufw_log_path..."
 sudo chmod 644 "$ufw_log_path"
 
-# Uninstall corepack
-echo "🗑️ Uninstalling corepack..."
-sudo npm uninstall corepack -g -silent
-
 # Install pm2
 echo "📦 Installing PM2..."
 sudo npm install pm2 -g -silent
