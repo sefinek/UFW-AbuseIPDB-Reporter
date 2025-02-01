@@ -15,7 +15,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 ## 📋 Requirements
 1. [Node.js + npm](https://nodejs.org)
-2. [PM2](https://www.npmjs.com/package/pm2) `npm i pm2 -g`
+2. [PM2](https://www.npmjs.com/package/pm2) (`npm i pm2 -g`)
 3. [Git](https://git-scm.com)
 
 
