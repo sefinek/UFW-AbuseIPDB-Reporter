@@ -27,7 +27,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
     - Daily summaries of reported IP addresses
 4. Automatic updates.
 
-## 📥 Installation
+## 📥 Installation (Ubuntu & Debian)
 
 ### Automatic (easy & recommenced)
 #### Via curl
@@ -40,7 +40,7 @@ bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporte
 bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
-### Manually (Ubuntu & Debian)
+### Manually
 #### Node.js installation
 ```bash
 sudo apt-get install -y curl
