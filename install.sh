@@ -1,261 +1,243 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-###
-# https://github.com/sefinek/UFW-AbuseIPDB-Reporter
-##
-
-VERSION="1.1.2"
-DATE="20.12.2024"
-REPO="https://github.com/sefinek/UFW-AbuseIPDB-Reporter"
+##################################################################
+#    Copyright 2024-2025 (c) by Sefinek All rights reserved.     #
+#                    https://sefinek.net                         #
+##################################################################
 
 cat << "EOF"
-     _      _                            ___   ____    ____    ____
-    / \    | |__    _   _   ___    ___  |_ _| |  _ \  |  _ \  | __ )
-   / _ \   | '_ \  | | | | / __|  / _ \  | |  | |_) | | | | | |  _ \
-  / ___ \  | |_) | | |_| | \__ \ |  __/  | |  |  __/  | |_| | | |_) |
- /_/   \_\_|_.__/ _ \__,_| |___/  \___| |___| |_|     |____/  |____/
+              _      _                            ___   ____    ____    ____
+             / \    | |__    _   _   ___    ___  |_ _| |  _ \  |  _ \  | __ )
+            / _ \   | '_ \  | | | | / __|  / _ \  | |  | |_) | | | | | |  _ \
+           / ___ \  | |_) | | |_| | \__ \ |  __/  | |  |  __/  | |_| | | |_) |
+          /_/   \_\_|_.__/ _ \__,_| |___/  \___| |___| |_|     |____/  |____/
 
-         (_)_ __ | |_ ___  __ _ _ __ __ _| |_(_) ___  _ __
-         | | '_ \| __/ _ \/ _` | '__/ _` | __| |/ _ \| '_ \
-         | | | | | ||  __/ (_| | | | (_| | |_| | (_) | | | |
-         |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
-                          |___/
+                  (_)_ __ | |_ ___  __ _ _ __ __ _| |_(_) ___  _ __
+                   | | '_ \| __/ _ \/ _` | '__/ _` | __| |/ _ \| '_ \
+                   | | | | | ||  __/ (_| | | | (_| | |_| | (_) | | | |
+                   |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
+                                    |___/
 
-EOF
+                 >> Made by sefinek.net || Last update: 18.01.2025 <<
 
-cat <<EOF
-     >> Made by sefinek.net || Version: $VERSION [$DATE] <<
-
-This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes
-UFW firewall logs and reports IP addresses to AbuseIPDB. Remember to perform
-updates periodically. You can join my Discord server to receive notifications
-about the latest changes and more: https://discord.gg/53DBjTuzgZ
-================================================================================
+This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
+reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
+server to stay updated on the latest changes and more: https://discord.gg/53DBjTuzgZ
+============================================================================================
 
 EOF
 
-# Function to download a file using either curl or wget
-download_file() {
-    local url="$1"
-    local output="$2"
-    local user_agent="UFW-AbuseIPDB-Reporter/$VERSION (+$REPO)"
-
-    if command -v curl >/dev/null 2>&1; then
-        echo "INFO: Using 'curl' to download the file..."
-        sudo curl -A "$user_agent" -o "$output" "$url"
-    elif command -v wget >/dev/null 2>&1; then
-        echo "INFO: 'curl' is not installed. Using 'wget' to download the file..."
-        sudo wget --header="User-Agent: $user_agent" -O "$output" "$url"
-    else
-        echo "FAIL: Neither 'curl' nor 'wget' is installed! Please install one of these packages and try running the script again."
-        exit 1
-    fi
-}
-
-# Ask
-ask_user() {
-    local question="$1"
-    local response
-
+# Function to prompt for a Yes/no answer
+yes_no_prompt() {
+    local prompt="$1"
     while true; do
-        read -rp "$ $question [Yes/no]: " response
-        case "${response,,}" in
-            yes|y) return 0;;
-            no|n) return 1;;
-            *) echo "Invalid input. Please answer 'yes' or 'no'."
-               echo;;
+        read -r -p "$prompt [Yes/no]: " answer
+        case $answer in
+            [Yy]*|[Yy]es ) return 0 ;;  # Return 0 for Yes
+            [Nn]*|[Nn]o ) return 1 ;;   # Return 1 for No
+            * ) echo "❌ Invalid input. Please answer Yes/no or Y/n." ;;
         esac
     done
 }
 
-# ========================= CHECK FOR MISSING PACKAGES =========================
-required_packages=(ufw jq openssl)
-missing_packages=()
+# Function to check and install missing dependencies
+check_dependencies() {
+    local dependencies=(curl node git)
+    local missing=()
 
-for pkg in "${required_packages[@]}"; do
-    if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
-        missing_packages+=("$pkg")
-    fi
-done
+    for dependency in "${dependencies[@]}"; do
+        if ! command -v "$dependency" &> /dev/null; then
+            missing+=("$dependency")
+        else
+            echo "✅ $dependency is installed ($(command -v "$dependency"))"
+            if $dependency --version &> /dev/null; then
+                $dependency --version
+            else
+                echo "ℹ️ Version information for $dependency is unavailable"
+            fi
+        fi
+    done
 
-if [ ${#missing_packages[@]} -gt 0 ]; then
-    echo "WARN: The following packages are not installed: ${missing_packages[*]}"
-    if ! ask_user "Do you want to install them now?"; then
-        echo "FAIL: Missing dependencies packages. Installation cannot proceed without them."
-        exit 1
-    fi
-
-    echo "INFO: Installing missing dependencies: ${missing_packages[*]}"
-    if ! sudo apt-get update && sudo apt-get install -y "${missing_packages[@]}"; then
-        echo "FAIL: Failed to install the required dependencies. Aborting installation!"
-        exit 1
-    fi
-
-    echo -e "INFO: All required dependencies have been successfully installed.\n"
-else
-    echo "INFO: Dependencies are already installed on this machine."
-fi
-
-
-# =========================== Check if the service already exists ===========================
-if systemctl list-unit-files | grep -q '^abuseipdb-ufw.service'; then
-    echo "WARN: abuseipdb-ufw.service is already installed! If you plan to update or reinstall, choose 'Yes'."
-    if ask_user "Do you want to remove the existing service?"; then
-      sudo systemctl stop abuseipdb-ufw.service
-      sudo systemctl disable abuseipdb-ufw.service
-      sudo rm /etc/systemd/system/abuseipdb-ufw.service
-      sudo systemctl daemon-reload
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        echo "🚨 Missing dependencies: ${missing[*]}"
+        for dep in "${missing[@]}"; do
+            if yes_no_prompt "📦 Do you want to install $dep?"; then
+                case $dep in
+                    curl ) sudo apt-get install -y curl ;;
+                    node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && sudo bash nodesource_setup.sh && sudo apt-get install -y nodejs && rm -f nodesource_setup.sh ;;
+                    git ) sudo add-apt-repository ppa:git-core/ppa && sudo apt-get update && sudo apt-get -y install git ;;
+                esac
+            else
+                echo "❌ Cannot proceed without $dep. Exiting..."
+                exit 1
+            fi
+        done
     else
-        echo -e "INFO: Existing service will not be removed\n"
+        echo "✅ All dependencies are installed"
     fi
-fi
+}
 
+# Check dependencies before proceeding
+check_dependencies
 
-# =========================== Prepare installation directory ===========================
-install_dir="/usr/local/bin/UFW-AbuseIPDB-Reporter"
-script_path="$install_dir/reporter.sh"
-if [ -d "$install_dir" ]; then
-    echo "INFO: Directory $install_dir already exists. Removing it..."
-    if ! sudo rm -rf "$install_dir"; then
-        echo "FAIL: Something went wrong. Failed to remove existing directory $install_dir."
+# Function to validate AbuseIPDB API key
+validate_token() {
+    local api_key=$1
+    local api_url="https://api.abuseipdb.com/api/v2/check?ipAddress=8.8.8.8"
+    local response
+
+    if command -v curl &>/dev/null; then
+        response=$(curl -s -o /dev/null -w "%{http_code}" -H "Key: $api_key" "$api_url")
+    elif command -v wget &>/dev/null; then
+        response=$(wget --quiet --server-response --header="Key: $api_key" --output-document=/dev/null "$api_url" 2>&1 | awk '/HTTP\/1\.[01] [0-9]{3}/ {print $2}' | tail -n1)
+    else
+        echo "🚨 Neither curl nor wget is installed. Please install one of them to proceed."
         exit 1
     fi
+
+    if [[ $response -eq 200 ]]; then
+        echo "✅ Yay! Token is valid."
+        return 0
+    else
+        echo "❌ Invalid token! Please try again."
+        return 1
+    fi
+}
+
+# Check for UFW log file
+if [[ ! -f /var/log/ufw.log ]]; then
+    read -r -p "🔍 /var/log/ufw.log not found. Please enter the path to your log file: " ufw_log_path
+    if [[ -f $ufw_log_path ]]; then
+        echo "✅ Log file found at $ufw_log_path"
+    else
+        echo "❌ Provided log file path does not exist. Exiting..."
+        exit 1
+    fi
+else
+    ufw_log_path="/var/log/ufw.log"
+    echo "✅ /var/log/ufw.log exists"
 fi
 
-echo "INFO: Creating installation directory at $install_dir..."
-if ! sudo mkdir -p "$install_dir"; then
-    echo "FAIL: Something went wrong. Failed to create installation directory."
-    exit 1
-fi
-echo
-
-
-# =========================== Prepare reporter.sh script ===========================
-GITHUB_URL="https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/reporter.sh"
-echo "INFO: Downloading reporter.sh from $GITHUB_URL..."
-if ! download_file "$GITHUB_URL" "$script_path"; then
-    echo "FAIL: Something went wrong while downloading the file from GitHub servers! Maybe try running this script as sudo?"
-    exit 1
-fi
-echo "INFO: Saved reporter.sh at location $script_path"
-
-if ! sudo chmod +x "$script_path"; then
-    echo "FAIL: Failed to make reporter.sh executable."
-    exit 1
-fi
-echo -e "INFO: reporter.sh has been made executable.\n"
-
-
-# =========================== AbuseIPDB API token ===========================
-max_attempts=4
-valid_token=false
-for ((attempts = 0; attempts < max_attempts; attempts++)); do
-    read -rsp "$ Please enter your AbuseIPDB API token: " api_key
-    echo
-
-    if [[ "$api_key" =~ ^[a-f0-9]{80}$ ]]; then
-        valid_token=true
+# Prompt for AbuseIPDB API token
+while true; do
+    read -r -p "🔑 Please enter your AbuseIPDB API token: " api_token
+    if validate_token "$api_token"; then
         break
     fi
+    continue
+done
 
-    attempts_left=$((max_attempts - attempts - 1))
-    if (( attempts_left > 0 )); then
-        echo "WARN: Invalid API token format. Please enter an 80-character hexadecimal string. You have $attempts_left/$max_attempts attempts left."
+# Prompt for server ID
+while true; do
+    read -r -p "🖥️ Enter the server ID (e.g., homeserver1). Leave blank if you do not wish to provide one: " server_id
+    if [[ -z $server_id ]]; then
+        server_id=null
+        break
+    elif [[ $server_id =~ ^[A-Za-z0-9]{1,16}$ ]]; then
+        break
+    else
+        echo "❌ It must be 1-16 characters long, contain only letters and numbers, and have no spaces or special characters."
     fi
 done
 
-if [[ "$valid_token" != true ]]; then
-    echo "FAIL: Maximum number of attempts reached. Installation aborted!"
-    exit 1
+# Prompt for system update and upgrade
+if yes_no_prompt "🛠️ Do you want the script to run apt update and apt upgrade for you?"; then
+    echo "🔧 Updating and upgrading the system..."
+    sudo apt-get update && sudo apt-get upgrade
 fi
 
-# Encode the API token
-token_file="$install_dir/.abuseipdb_token"
-echo "INFO: Encoding data (file $token_file)..."
-if ! echo -n "$api_key" | openssl enc -base64 | sudo tee "$token_file" >/dev/null; then
-    echo "FAIL: Something went wrong. Failed to encode API token."
-    exit 1
-fi
-
-# Update the ENCODED_API_KEY_FILE variable in reporter.sh by replacing the existing definition
-echo "INFO: Updating ENCODED_API_KEY_FILE variable in reporter.sh..."
-if ! sudo sed -i "s|^ENCODED_API_KEY_FILE=.*|ENCODED_API_KEY_FILE=\"$token_file\"|" "$script_path"; then
-    echo "FAIL: Failed to update ENCODED_API_KEY_FILE in reporter.sh."
-    exit 1
-fi
-
-echo "INFO: Setting permissions (chmod 644) for /var/log/ufw.log..."
-sudo chmod 644 /var/log/ufw.log
-echo
-
-
-# =========================== abuseipdb-ufw.service ===========================
-if ask_user "Would you like to add reporter.sh as a service and start it?"; then
-    service_file="/etc/systemd/system/abuseipdb-ufw.service"
-    echo "INFO: Setting up reporter.sh as a service"
-    if ! sudo bash -c "cat > $service_file" <<-EOF
-[Unit]
-Description=UFW AbuseIPDB Reporter
-After=network.target
-Documentation=$REPO
-
-[Service]
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ExecStart=$script_path
-Restart=always
-User=$(logname)
-WorkingDirectory=$install_dir
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    then
-        echo "FAIL: Failed to create service file. Please check your permissions!"
-        exit 1
-    fi
-
-    sudo systemctl daemon-reload
-
-    if sudo systemctl enable abuseipdb-ufw.service && sudo systemctl start abuseipdb-ufw.service; then
-        echo "INFO: Attempting to start the abuseipdb-ufw.service..."
-    else
-        echo "FAIL: Failed to enable or start the abuseipdb-ufw.service. Please check the system logs for details."
-        exit 1
-    fi
-
-    echo "INFO: Waiting 8 seconds to verify the script's stability..."
-    sleep 8
-
-    if sudo systemctl is-active --quiet abuseipdb-ufw.service; then
-        echo "INFO: abuseipdb-ufw.service is running!"
-        sudo systemctl status abuseipdb-ufw.service --no-pager
-    else
-        echo "FAIL: abuseipdb-ufw.service failed to start."
-        sudo systemctl status abuseipdb-ufw.service --no-pager
-        exit 1
-    fi
+# Clone repository & set permissions
+if [ ! -d "/opt" ]; then
+    mkdir -p /opt
+    echo "📂 '/opt' has been created"
 else
-    echo -e "INFO: reporter.sh will not be added as a service. Running the script directly... Press ^C to stop.\n"
-    if "$script_path"; then
-        echo "INFO: reporter.sh executed successfully."
-    else
-        echo "FAIL: Failed to execute reporter.sh!"
-        exit 1
-    fi
+    echo "✅ '/opt' directory already exists"
 fi
-echo
 
-# Prompt to add the service to autostart
-if ask_user "Do you want to add abuseipdb-ufw.service to autostart?"; then
-    if sudo systemctl enable abuseipdb-ufw.service; then
-        echo "INFO: Great! abuseipdb-ufw.service has been added to autostart. Installation finished!"
-        echo "INFO: Run 'journalctl -u abuseipdb-ufw.service -f' to view more logs."
-    else
-        echo "FAIL: Failed to add abuseipdb-ufw.service to autostart!"
-        exit 1
-    fi
+cd /opt || { echo "❌ Failed to change directory to '/opt'. Exiting..."; exit 1; }
+
+if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
+    echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
+    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
-    echo "INFO: abuseipdb-ufw.service will not be added to autostart. Installation finished!"
+    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists"
 fi
+
+sudo chown "$USER":"$USER" /opt/UFW-AbuseIPDB-Reporter -R
+
+echo "📥 Pulling latest changes..."
+cd UFW-AbuseIPDB-Reporter || { echo "❌ Failed to change directory to 'UFW-AbuseIPDB-Reporter'. Exiting..."; exit 1; }
+git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
+
+# Install npm dependencies
+echo "📦 Installing npm dependencies..."
+npm install -silent
+
+# Copy configuration file
+if [ -e config.js ]; then
+  echo "✅ config.js already exists"
+else
+  echo "📑 Copying default.config.js to config.js..."
+  cp default.config.js config.js
+fi
+
+# Update config.js with API token, Server ID, and UFW log path
+config_file="config.js"
+if [[ -f $config_file ]]; then
+    echo "🔧 Updating $PWD/$config_file..."
+    sed -i "s|UFW_LOG_FILE: .*|UFW_LOG_FILE: '$ufw_log_path',|" $config_file
+    sed -i "s|SERVER_ID: .*|SERVER_ID: '$server_id',|" $config_file
+    sed -i "s|ABUSEIPDB_API_KEY: .*|ABUSEIPDB_API_KEY: '$api_token',|" $config_file
+else
+    echo "❌ $config_file not found. Make sure the repository was cloned and initialized correctly."
+    exit 1
+fi
+
+# Create logs directory
+echo "📂 Creating /var/log/ufw-abuseipdb directory..."
+sudo mkdir -p /var/log/ufw-abuseipdb
+sudo chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
+
+# Change permissions for UFW log file
+echo "🔒 Changing permissions for $ufw_log_path..."
+sudo chmod 644 "$ufw_log_path"
+
+# Install pm2
+echo "📦 Installing PM2..."
+sudo npm install pm2 -g -silent
+
+
+# Configure PM2
+echo "⚙️ Adding PM2 to autostart..."
+startup_command=$(pm2 startup | grep "sudo env PATH" | sed 's/^[^s]*sudo/sudo/')
+
+if [ -n "$startup_command" ]; then
+    echo "⚙️ Executing: $startup_command"
+    eval "$startup_command" &>/dev/null || {
+        echo "❌ Failed to execute the startup command!"
+    }
+else
+    echo "❌ Failed to find the command generated by pm2 startup! PM2 was not added to autostart."
+fi
+
+echo "⚙️ Running a script with PM2 and saving the current state of all processes managed by it..."
+pm2 start --silent
+pm2 save --silent
+
+
+# Final
+echo "🌌 Checking PM2 status..."
+pm2 status
+
+echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' command to monitor logs in real time."
+
+echo -e "\n====================================== Summary ======================================"
+echo "🖥️ Server ID     : ${server_id:-null}"
+echo "🔑 API Key       : $api_token"
+echo "📂 Script        : $PWD"
+echo "⚙️ Config File   : $PWD/config.js"
+
+echo -e "\n====================================== Support ======================================"
+echo "📩 Email         : contact@sefinek.net"
+echo "🔵 Discord       : https://discord.gg/RVH8UXgmzs"
+echo "😺 GitHub Issues : https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues"

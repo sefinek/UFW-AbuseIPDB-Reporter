@@ -1,47 +1,88 @@
-<div align="center">
-  [<a href="README.md">English</a>]
-  [<a href="README_PL.md">Polski</a>]
-</div>
-
 # 🛡️ UFW AbuseIPDB Reporter
-A utility designed to analyze UFW firewall logs and report malicious IP addresses to the [AbuseIPDB](https://www.abuseipdb.com) database.  
-To prevent redundant reporting of the same IP address within a short period, the tool uses a temporary cache file to track previously reported IPs.
+A utility designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
+To prevent excessive reporting of the same IP address within a short period, the tool uses a temporary cache file to track previously reported IP addresses.
 
-If you like this repository or find it useful, I would greatly appreciate it if you could give it a star ⭐. Thanks a lot!  
-See also this: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/Cloudflare-WAF-To-AbuseIPDB)
+This project was originally written in Bash but has been rewritten in [Node.js](https://nodejs.org). All my integration tools are now written in Node, hence this change.
+If you were using the old version, please [uninstall it](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/tree/node.js?tab=readme-ov-file#%EF%B8%8F-remove-the-old-version) as it will no longer be supported.
+
+If you like this repository or find it useful, I’d greatly appreciate it if you could give it a star ⭐. Many thanks!  
+Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/Cloudflare-WAF-To-AbuseIPDB)
 
 > [!IMPORTANT]
-> If you'd like to make changes to any files in this repository, please start by creating a [public fork](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/fork).
+> - If you'd like to make changes to any files in this repository, please start by creating a [public fork](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/fork).
+> - According to AbuseIPDB's policy, UDP traffic should not be reported!
 
 
 ## 📋 Requirements
-- **Operating System:** Linux with UFW firewall installed and configured.
-- **AbuseIPDB Account:** An account on the AbuseIPDB service [with a valid API token](https://www.abuseipdb.com/account/api). The API token is required.
-- **Installed packages:**
-  - `wget` or `curl`: One of these tools is required to download the [installation script](install.sh) from the GitHub repository and to send requests to the AbuseIPDB API.
-  - `jq`: A tool for processing and parsing JSON data returned by the AbuseIPDB API.
-  - `openssl`: Used to encode and decode the API token to secure authentication data.
-  - `tail`, `awk`, `grep`, `sed`: Standard Unix tools used for text processing and log analysis.
+1. [Node.js + npm](https://nodejs.org)
+2. [PM2](https://www.npmjs.com/package/pm2)
+3. [Git](https://git-scm.com)
 
 
-## 🧪 Tested operating systems
-- **Ubuntu Server:** 20.04 & 22.04
-
-*If the distribution you're using to run this tool isn't listed here but works correctly, please create a new [Issue](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues) or submit a [Pull request](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/pulls).*
-
+## ✅ Features
+1. A [`config.js`](default.config.js) file enabling easy configuration.
+2. A simple installer allowing quick integration deployment.
+3. Integration with Discord Webhooks (coming soon):
+    - Alerts in case of script errors
+    - Daily summaries of reported IP addresses
+4. Automatic updates.
 
 ## 📥 Installation
-### curl
+
+### Automatic (easy & recommenced)
+#### Via curl
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
+bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
-### wget
+#### Via wget
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
-The installation script will automatically download and configure the tool on your machine. During the installation process, you will be prompted to provide an [AbuseIPDB API token](https://www.abuseipdb.com/account/api).
+### Manually
+#### Node.js installation (Ubuntu & Debian)
+```bash
+sudo apt-get install -y curl
+curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+sudo -E bash nodesource_setup.sh && sudo apt-get install -y nodejs
+```
+
+#### Git installation
+```bash
+sudo add-apt-repository ppa:git-core/ppa
+sudo apt-get update && sudo apt-get -y install git 
+```
+
+#### Script
+```bash
+sudo apt-get update && sudo apt-get upgrade
+cd ~
+git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git
+cd UFW-AbuseIPDB-Reporter
+npm install
+cp default.config.js config.js
+sudo chmod 644 /var/log/ufw.log
+node .
+^C
+npm uninstall corepack -g
+npm install pm2 -g
+sudo mkdir /var/log/ufw-abuseipdb
+sudo chown $USER:$USER /var/log/ufw-abuseipdb -R
+pm2 start
+pm2 startup
+[Paste the command generated by pm2 startup]
+pm2 save
+```
+
+
+## 🗑️ Uninstall the deprecated version if you have it
+```bash
+sudo systemctl stop abuseipdb-ufw.service && sudo systemctl disable abuseipdb-ufw.service
+sudo rm /etc/systemd/system/abuseipdb-ufw.service
+sudo systemctl daemon-reload
+sudo rm -r /usr/local/bin/UFW-AbuseIPDB-Reporter
+```
 
 
 ## 🖥️ Usage
@@ -51,26 +92,27 @@ The tool requires no additional user action after installation. However, it's wo
 Servers open to the world are constantly scanned by bots, usually looking for vulnerabilities or other security gaps.
 So don't be surprised if the next day, the number of reports to AbuseIPDB exceeds a thousand.
 
-### 🔍 Checking service status
+### 🔍 Checking logs
 ```bash
-sudo systemctl status abuseipdb-ufw.service
+pm2 logs ufw-abuseipdb
 ```
 
-To see the current logs generated by the process, use the command:
-```bash
-journalctl -u abuseipdb-ufw.service -f
-```
+### 📄 Example reports
+#### 1️⃣
+```text
+Blocked by UFW on homeserver01 [80/tcp]
+Source port: 23639
+TTL: 247
+Packet length: 40
+TOS: 0x00
 
-### 📄 Example report
-```
-Blocked by UFW (TCP on 80)
-Source port: 28586
-TTL: 116
-Packet length: 48
-TOS: 0x08
-
-This report (for 46.174.191.31) was generated by:
+This report was generated by:
 https://github.com/sefinek/UFW-AbuseIPDB-Reporter
+```
+
+#### 2️⃣
+```text
+Blocked by UFW on homeserver01 [30049/tcp]. Generated by: https://github.com/sefinek/UFW-AbuseIPDB-Reporter
 ```
 
 
@@ -78,5 +120,5 @@ https://github.com/sefinek/UFW-AbuseIPDB-Reporter
 If you want to contribute to the development of this project, feel free to create a new [Pull request](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/pulls). I will definitely appreciate it!
 
 
-## 🔑 GPL-3.0 License
-Copyright 2024 © by [Sefinek](https://sefinek.net). All rights reserved. See the [LICENSE](LICENSE) file for more information.
+## 🔑 [GPL-3.0 License](LICENSE)
+Copyright 2024-2025 © by [Sefinek](https://sefinek.net). All rights reserved.
