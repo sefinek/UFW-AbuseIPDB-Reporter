@@ -10,7 +10,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 > [!IMPORTANT]
 > - If you'd like to make changes to any files in this repository, please start by creating a [public fork](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/fork).
-> - According to AbuseIPDB's policy, UDP traffic should not be reported!
+> - According to AbuseIPDB's policy, [UDP traffic should not be reported](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/discussions/2)!
 
 
 ## 📋 Requirements
