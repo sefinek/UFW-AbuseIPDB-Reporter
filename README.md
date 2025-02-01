@@ -40,8 +40,8 @@ bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporte
 bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/node.js/install.sh)
 ```
 
-### Manually
-#### Node.js installation (Ubuntu & Debian)
+### Manually (Ubuntu & Debian)
+#### Node.js installation
 ```bash
 sudo apt-get install -y curl
 curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
