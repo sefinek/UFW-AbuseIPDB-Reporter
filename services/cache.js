@@ -1,12 +1,12 @@
-const fs = require('node:fs');
+const { existsSync, readFileSync, writeFileSync } = require('node:fs');
 const { CACHE_FILE, IP_REPORT_COOLDOWN } = require('../config.js').MAIN;
 const log = require('../utils/log.js');
 
 const reportedIPs = new Map();
 
 const loadReportedIPs = () => {
-	if (fs.existsSync(CACHE_FILE)) {
-		fs.readFileSync(CACHE_FILE, 'utf8')
+	if (existsSync(CACHE_FILE)) {
+		readFileSync(CACHE_FILE, 'utf8')
 			.split('\n')
 			.forEach(line => {
 				const [ip, time] = line.split(' ');
@@ -18,7 +18,7 @@ const loadReportedIPs = () => {
 	}
 };
 
-const saveReportedIPs = () => fs.writeFileSync(CACHE_FILE, Array.from(reportedIPs).map(([ip, time]) => `${ip} ${time}`).join('\n'), 'utf8');
+const saveReportedIPs = () => writeFileSync(CACHE_FILE, Array.from(reportedIPs).map(([ip, time]) => `${ip} ${time}`).join('\n'), 'utf8');
 
 const isIPReportedRecently = ip => {
 	const reportedTime = reportedIPs.get(ip);

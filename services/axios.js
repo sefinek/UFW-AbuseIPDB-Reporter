@@ -1,9 +1,8 @@
 const axios = require('axios');
 const { version } = require('../package.json');
-const { GITHUB_REPO } = require('../config.js').MAIN;
 
 axios.defaults.headers.common = {
-	'User-Agent': `Mozilla/5.0 (compatible; UFW-AbuseIPDB-Reporter/${version}; +${GITHUB_REPO})`,
+	'User-Agent': `Mozilla/5.0 (compatible; UFW-AbuseIPDB-Reporter/${version}; +https://github.com/sefinek/UFW-AbuseIPDB-Reporter)`,
 	'Accept': 'application/json',
 	'Cache-Control': 'no-cache',
 	'Connection': 'keep-alive',

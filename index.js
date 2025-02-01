@@ -12,10 +12,7 @@ const axios = require('./services/axios.js');
 const serverAddress = require('./services/fetchServerIP.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
-const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, GITHUB_REPO } = config.MAIN;
-
-// Updates
-require('./update.js');
+const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED } = config.MAIN;
 
 let fileOffset = 0;
 
@@ -38,12 +35,10 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 const processLogLine = async line => {
 	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring line: ${line}`);
 
-	const oldTime = line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0];
 	const timestampMatch = line.match(/\[(\d+\.\d+)\]/);
-	const newTime = timestampMatch ? parseFloat(timestampMatch[1]) : null;
 	const logData = {
-		timestampOld: oldTime || null,
-		timestampNew: newTime || null,
+		timestampOld: line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0] || null,
+		timestampNew: (timestampMatch ? parseFloat(timestampMatch[1]) : null) || null,
 		In:           line.match(/IN=([\d.]+)/)?.[1] || null,
 		Out:          line.match(/OUT=([\d.]+)/)?.[1] || null,
 		srcIp:        line.match(/SRC=([\d.]+)/)?.[1] || null,
@@ -117,7 +112,7 @@ const processLogLine = async line => {
 };
 
 (async () => {
-	log(0, `v${version} (${GITHUB_REPO})`);
+	log(0, `v${version} (https://github.com/sefinek/UFW-AbuseIPDB-Reporter)`);
 
 	loadReportedIPs();
 
@@ -147,4 +142,10 @@ const processLogLine = async line => {
 
 	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
 	log(0, '=====================================================================');
+
+	// Auto updates
+	if (AUTO_UPDATE_ENABLED) {
+		const autoUpdates = require('./services/updates.js');
+		await autoUpdates.pull();
+	}
 })();
