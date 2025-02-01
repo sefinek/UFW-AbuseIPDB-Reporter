@@ -237,7 +237,7 @@ echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' com
 
 echo -e "\n====================================== Summary ======================================"
 echo "🖥️ Server ID     : ${server_id:-null}"
-echo "🔑 API Token     : $api_token"
+echo "🔑 API Key       : $api_token"
 echo "📂 Script        : $PWD"
 echo "⚙️ Config File   : $PWD/config.js"
 
