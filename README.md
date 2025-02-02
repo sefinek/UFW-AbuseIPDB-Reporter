@@ -20,7 +20,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 
 ## ✅ Features
-1. A [`config.js`](default.config.js) file enabling easy configuration.
+1. A [`config.js`](config.default.js) file enabling easy configuration.
 2. A simple installer allowing quick integration deployment.
 3. Integration with Discord Webhooks (coming soon):
     - Alerts in case of script errors
@@ -61,7 +61,7 @@ cd ~
 git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git
 cd UFW-AbuseIPDB-Reporter
 npm install
-cp default.config.js config.js
+cp config.default.js config.js
 sudo chmod 644 /var/log/ufw.log
 node .
 ^C

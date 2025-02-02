@@ -177,8 +177,8 @@ npm install -silent
 if [ -e config.js ]; then
   echo "✅ config.js already exists"
 else
-  echo "📑 Copying default.config.js to config.js..."
-  cp default.config.js config.js
+  echo "📑 Copying config.default.js to config.js..."
+  cp config.default.js config.js
 fi
 
 # Update config.js with API token, Server ID, and UFW log path
