@@ -3,7 +3,7 @@ exports.MAIN = {
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
 	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver1'). If you don't want to define it, leave the value as null.
-	IP_REFRESH_INTERVAL: 5 * 60 * 1000, // How often should (every 5 minutes) the script check the server's IP address to avoid accidental self-reports?
+	IP_REFRESH_INTERVAL: 8 * 60 * 1000, // How often should (every 5 minutes) the script check the server's IP address to avoid accidental self-reports?
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
