@@ -1,7 +1,7 @@
 const { networkInterfaces } = require('node:os');
 const axios = require('./axios.js');
 const isLocalIP = require('../utils/isLocalIP.js');
-const { REFRESHING_IP_ADDRESS } = require('../config.js').MAIN;
+const { IP_REFRESH_INTERVAL } = require('../config.js').MAIN;
 
 const ipAddrList = new Set();
 
@@ -32,7 +32,7 @@ const fetchServerIPs = async () => {
 
 (async () => {
 	await fetchServerIPs();
-	setInterval(fetchServerIPs, REFRESHING_IP_ADDRESS);
+	setInterval(fetchServerIPs, IP_REFRESH_INTERVAL);
 
 	// console.debug(ipAddrList);
 })();
