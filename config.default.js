@@ -10,8 +10,8 @@ exports.MAIN = {
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
 
 	// Automatic updates
-	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // Schedule for automatic script updates (CRON format). Default: every day at 18:00
 	AUTO_UPDATE_ENABLED: true, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
+	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // Schedule for automatic script updates (CRON format). Default: every day at 18:00
 };
 
 
