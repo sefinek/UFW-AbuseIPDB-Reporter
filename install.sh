@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ###
-# https://github.com/sefinek/UFW-AbuseIPDB-Reporter
+# https://github.com/sefinek/UFW-AbuseIPDB-Reporter (branch bash)
 ##
 
-VERSION="1.1.2"
-DATE="20.12.2024"
+VERSION="1.1.3"
+DATE="08.02.2025"
 REPO="https://github.com/sefinek/UFW-AbuseIPDB-Reporter"
 
 cat << "EOF"
@@ -131,7 +131,7 @@ echo
 
 
 # =========================== Prepare reporter.sh script ===========================
-GITHUB_URL="https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/reporter.sh"
+GITHUB_URL="https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/bash/reporter.sh"
 echo "INFO: Downloading reporter.sh from $GITHUB_URL..."
 if ! download_file "$GITHUB_URL" "$script_path"; then
     echo "FAIL: Something went wrong while downloading the file from GitHub servers! Maybe try running this script as sudo?"

@@ -33,12 +33,12 @@ See also this: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/
 ## 📥 Installation
 ### curl
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/bash/install.sh)
 ```
 
 ### wget
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/bash/install.sh)
 ```
 
 The installation script will automatically download and configure the tool on your machine. During the installation process, you will be prompted to provide an [AbuseIPDB API token](https://www.abuseipdb.com/account/api).
