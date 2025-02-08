@@ -55,7 +55,7 @@ sudo add-apt-repository ppa:git-core/ppa
 sudo apt-get update && sudo apt-get -y install git 
 ```
 
-#### Script
+#### Commands
 ```bash
 sudo apt-get update && sudo apt-get upgrade
 cd ~
@@ -66,7 +66,6 @@ cp config.default.js config.js
 sudo chmod 644 /var/log/ufw.log
 node .
 ^C
-npm uninstall corepack -g
 npm install pm2 -g
 sudo mkdir /var/log/ufw-abuseipdb
 sudo chown $USER:$USER /var/log/ufw-abuseipdb -R
