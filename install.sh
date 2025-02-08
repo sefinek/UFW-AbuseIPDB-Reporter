@@ -18,7 +18,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 01.02.2025 <<
+                 >> Made by sefinek.net || Last update: 08.02.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -158,7 +158,7 @@ cd /opt || { echo "❌ Failed to change directory to '/opt'. Exiting..."; exit 1
 
 if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
-    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --branch node.js || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
+    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
     echo "✨ The UFW-AbuseIPDB-Reporter repository already exists"
 fi

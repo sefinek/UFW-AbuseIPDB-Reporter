@@ -1,6 +1,6 @@
 {
   "name": "ufw-abuseipdb-reporter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A tool (with a simple installer) that monitors UFW firewall logs in real time and reports IP addresses to the AbuseIPDB database.",
   "keywords": [
     "ufw",
@@ -30,7 +30,7 @@
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.20.0",
     "globals": "^15.14.0"
   }
 }
