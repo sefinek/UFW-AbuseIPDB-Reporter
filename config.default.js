@@ -3,15 +3,19 @@ exports.MAIN = {
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
 	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver1'). If you don't want to define it, leave the value as null.
-	IP_REFRESH_INTERVAL: 8 * 60 * 1000, // How often should (every 5 minutes) the script check the server's IP address to avoid accidental self-reports?
+	IP_REFRESH_INTERVAL: 10 * 60 * 1000, // How often should (every 5 minutes) the script check the server's IP address to avoid accidental self-reports?
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
 
-	// Automatic updates
+	// Automatic Updates
 	AUTO_UPDATE_ENABLED: true, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
 	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // Schedule for automatic script updates (CRON format). Default: every day at 18:00
+
+	// Discord Webhooks
+	DISCORD_WEBHOOKS_ENABLED: false,
+	DISCORD_WEBHOOKS_URL: '',
 };
 
 

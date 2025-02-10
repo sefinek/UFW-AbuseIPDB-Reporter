@@ -21,16 +21,19 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 
 ## ✅ Features
-1. A [`config.js`](config.default.js) file enabling easy configuration.
-2. A simple installer allowing quick integration deployment.
-3. Integration with Discord Webhooks (coming soon):
-    - Alerts in case of script errors
-    - Daily summaries of reported IP addresses
-4. Automatic updates.
+1. **Easy Configuration** – The [`config.js`](config.default.js) file allows for quick and simple customization.
+2. **Simple Installer** – Enables fast and seamless integration deployment.
+3. **Self-IP Protection** – The script will never report an IP address belonging to you or your server, even if you use a dynamic IP.
+4. **Discord Webhooks Integration**:
+   - Important notifications.
+   - Alerts for script errors.
+   - Daily summaries of reported IP addresses.
+5. **Automatic Updates** – The script regularly fetches and applies the latest updates. If you want, you can disable it, of course.
+
 
 ## 📥 Installation (Ubuntu & Debian)
 
-### Automatic (easy & recommenced)
+### Automatic (easy & fast & recommenced)
 #### Via curl
 ```bash
 bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
@@ -44,20 +47,20 @@ bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporte
 ### Manually
 #### Node.js installation
 ```bash
-sudo apt-get install -y curl
+sudo apt install -y curl
 curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
-sudo -E bash nodesource_setup.sh && sudo apt-get install -y nodejs
+sudo -E bash nodesource_setup.sh && sudo apt install -y nodejs
 ```
 
 #### Git installation
 ```bash
 sudo add-apt-repository ppa:git-core/ppa
-sudo apt-get update && sudo apt-get -y install git 
+sudo apt update && sudo apt -y install git 
 ```
 
 #### Commands
 ```bash
-sudo apt-get update && sudo apt-get upgrade
+sudo apt update && sudo apt upgrade
 cd ~
 git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git
 cd UFW-AbuseIPDB-Reporter

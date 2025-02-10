@@ -4,14 +4,21 @@ const simpleGit = require('simple-git');
 const { CronJob } = require('cron');
 const restartApp = require('./reloadApp.js');
 const log = require('../utils/log.js');
+const discordWebhooks = require('./discord.js');
 
 const git = simpleGit();
 
 const pull = async () => {
+	await discordWebhooks(4, 'Updating the local repository in progress `(git pull)`...');
 	log(0, '$ git pull');
 
-	const { summary } = await git.pull();
-	log(0, `Changes: ${summary.changes}; Deletions: ${summary.insertions}; Insertions: ${summary.insertions};`);
+	try {
+		const { summary } = await git.pull();
+		log(0, `Changes: ${summary.changes}; Deletions: ${summary.insertions}; Insertions: ${summary.insertions}`);
+		await discordWebhooks(4, `**Changes:** ${summary.changes}; **Deletions:** ${summary.insertions}; **Insertions:** ${summary.insertions}`);
+	} catch (err) {
+		log(2, err);
+	}
 };
 
 const pullAndRestart = async () => {
@@ -19,11 +26,11 @@ const pullAndRestart = async () => {
 		await pull();
 		await restartApp();
 	} catch (err) {
-		log(2, err.message);
+		log(2, err);
 	}
 };
 
 // https://crontab.guru
-new CronJob(AUTO_UPDATE_SCHEDULE || '0 18 * * *', pullAndRestart, null, true, 'UTC'); // At 18:00
+new CronJob(AUTO_UPDATE_SCHEDULE, pullAndRestart, null, true, 'UTC');
 
-module.exports = { pull };
+module.exports = pull;

@@ -10,9 +10,10 @@ const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, mar
 const log = require('./utils/log.js');
 const axios = require('./services/axios.js');
 const serverAddress = require('./services/fetchServerIP.js');
+const discordWebhooks = require('./services/discord.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
-const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED } = config.MAIN;
+const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOKS_ENABLED, DISCORD_WEBHOOKS_URL } = config.MAIN;
 
 let fileOffset = 0;
 
@@ -33,7 +34,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 };
 
 const processLogLine = async line => {
-	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring line: ${line}`);
+	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring line: ${line}`);
 
 	const timestampMatch = line.match(/\[(\d+\.\d+)\]/);
 	const logData = {
@@ -143,9 +144,9 @@ const processLogLine = async line => {
 	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
 	log(0, '=====================================================================');
 
+	await discordWebhooks(0, `[UFW-AbuseIPDB-Reporter](https://github.com/sefinek/UFW-AbuseIPDB-Reporter) has been successfully launched on the device \`${SERVER_ID}\`.`);
+
 	// Auto updates
-	if (AUTO_UPDATE_ENABLED) {
-		const autoUpdates = require('./services/updates.js');
-		await autoUpdates.pull();
-	}
+	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE) await require('./services/updates.js')();
+	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./services/summaries.js')();
 })();

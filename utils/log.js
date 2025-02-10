@@ -1,3 +1,5 @@
+const discordWebhooks = require('../services/discord.js');
+
 const levels = {
 	0: { method: 'log', label: '[INFO]' },
 	1: { method: 'warn', label: '[WARN]' },
@@ -7,4 +9,6 @@ const levels = {
 module.exports = (level, msg) => {
 	const { method, label } = levels[level] || { method: 'log', label: '[N/A]' };
 	console[method](`${label} ${msg}`);
+
+	if (level >= 1) discordWebhooks(level, msg).catch(console.error);
 };
