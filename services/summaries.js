@@ -68,6 +68,6 @@ const sendWebhook = async () => {
 };
 
 module.exports = async () => {
-	await sendWebhook();
+	// await sendWebhook();
 	new CronJob('0 0 * * *', sendWebhook, null, true, 'UTC');
 };
