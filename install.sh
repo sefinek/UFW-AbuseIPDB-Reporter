@@ -18,7 +18,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 08.02.2025 <<
+                 >> Made by sefinek.net || Last update: 10.02.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -83,7 +83,7 @@ check_dependencies
 # Function to validate AbuseIPDB API key
 validate_token() {
     local api_key=$1
-    local api_url="https://api.abuseipdb.com/api/v2/check?ipAddress=8.8.8.8"
+    local api_url="https://api.abuseipdb.com/api/v2/check?ipAddress=1.1.1.1"
     local response
 
     if command -v curl &>/dev/null; then
