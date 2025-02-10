@@ -89,11 +89,10 @@ sudo rm -r /usr/local/bin/UFW-AbuseIPDB-Reporter
 
 
 ## 🖥️ Usage
-After successful installation, the script will run continuously in the background, monitoring UFW logs and automatically reporting malicious IP addresses.
-The tool requires no additional user action after installation. However, it's worth occasionally checking its operation and updating the script regularly (by running the installation command).
+After a successful installation, the script will run continuously in the background, monitoring UFW logs and automatically reporting IP addresses.
 
-Servers open to the world are constantly scanned by bots, usually looking for vulnerabilities or other security gaps.
-So don't be surprised if the next day, the number of reports to AbuseIPDB exceeds a thousand.
+Servers are constantly scanned by bots, usually looking for security vulnerabilities and similar weaknesses.
+So don't be surprised if the number of reports sent to AbuseIPDB exceeds a thousand the next day.
 
 ### 🔍 Checking logs
 ```bash
