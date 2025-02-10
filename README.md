@@ -79,7 +79,7 @@ pm2 save
 ```
 
 
-## 🗑️ Uninstall the [deprecated](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/tree/main?tab=readme-ov-file#%EF%B8%8F-ufw-abuseipdb-reporter) version if you have it
+## 🗑️ Uninstall the [deprecated](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/tree/bash) version if you have it
 ```bash
 sudo systemctl stop abuseipdb-ufw.service && sudo systemctl disable abuseipdb-ufw.service
 sudo rm /etc/systemd/system/abuseipdb-ufw.service
