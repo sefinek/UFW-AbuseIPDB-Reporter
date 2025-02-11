@@ -28,7 +28,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
    - Important notifications.
    - Alerts for script errors.
    - Daily summaries of reported IP addresses.
-5. **Automatic Updates** – The script regularly fetches and applies the latest updates. If you want, you can disable it, of course.
+5. **Automatic Updates** – The script regularly fetches and applies the latest updates. If you want, you can [disable it](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/blob/main/config.default.js#L13), of course.
 
 
 ## 📥 Installation (Ubuntu & Debian)
