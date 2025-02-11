@@ -23,7 +23,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 ## ✅ Features
 1. **Easy Configuration** – The [`config.js`](config.default.js) file allows for quick and simple customization.
 2. **Simple Installer** – Enables fast and seamless integration deployment.
-3. **Self-IP Protection** – The script will never report an IP address belonging to you or your server, even if you use a dynamic IP.
+3. **Self-IP Protection (IPv4 & IPv6)** – The script will never report an IP address belonging to you or your server, even if you use a dynamic IP.
 4. **Discord Webhooks Integration**:
    - Important notifications.
    - Alerts for script errors.
