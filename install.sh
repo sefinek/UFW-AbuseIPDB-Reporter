@@ -158,7 +158,7 @@ cd /opt || { echo "❌ Failed to change directory to '/opt'. Exiting..."; exit 1
 
 if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
     echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
-    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
+    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --recurse-submodules || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
     echo "✨ The UFW-AbuseIPDB-Reporter repository already exists"
 fi
