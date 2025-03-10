@@ -36,7 +36,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 const processLogLine = async line => {
 	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring line: ${line}`);
 
-	const timestampMatch = line.match(/\[(\d+\.\d+)\]/);
+	const timestampMatch = line.match(/\[(\d+\.\d+)]/);
 	const logData = {
 		timestampOld: line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0] || null,
 		timestampNew: (timestampMatch ? parseFloat(timestampMatch[1]) : null) || null,
