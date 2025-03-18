@@ -43,8 +43,8 @@ const processLogLine = async line => {
 		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, ICMP, etc.)
 		spt: line.match(/SPT=(\d+)/)?.[1] || null, // Source port
 		dpt: line.match(/DPT=(\d+)/)?.[1] || null, // Destination port
-		in: line.match(/IN=([\w]+)/)?.[1] || null, // Input interface
-		out: line.match(/OUT=([\w]+)/)?.[1] || null, // Output interface
+		in: line.match(/IN=(\w+)/)?.[1] || null, // Input interface
+		out: line.match(/OUT=(\w+)/)?.[1] || null, // Output interface
 		mac: line.match(/MAC=([\w:]+)/)?.[1] || null, // MAC address
 		len: line.match(/LEN=(\d+)/)?.[1] || null, // Packet length
 		ttl: line.match(/TTL=(\d+)/)?.[1] || null, // Time to live
