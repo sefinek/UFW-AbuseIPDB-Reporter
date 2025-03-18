@@ -34,27 +34,28 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 };
 
 const processLogLine = async line => {
-	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring line: ${line}`);
+	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring invalid line: ${line}`);
 
 	const logData = {
-		timestamp:    parseTimestamp(line),
-		In:           line.match(/IN=([\d.]+)/)?.[1] || null,
-		Out:          line.match(/OUT=([\d.]+)/)?.[1] || null,
-		srcIp:        line.match(/SRC=([\d.]+)/)?.[1] || null,
-		dstIp:        line.match(/DST=([\d.]+)/)?.[1] || null,
-		res:          line.match(/RES=(\S+)/)?.[1] || null,
-		tos:          line.match(/TOS=(\S+)/)?.[1] || null,
-		prec:         line.match(/PREC=(\S+)/)?.[1] || null,
-		ttl:          line.match(/TTL=(\d+)/)?.[1] || null,
-		id:           line.match(/ID=(\d+)/)?.[1] || null,
-		proto:        line.match(/PROTO=(\S+)/)?.[1] || null,
-		spt:          line.match(/SPT=(\d+)/)?.[1] || null,
-		dpt:          line.match(/DPT=(\d+)/)?.[1] || null,
-		len:          line.match(/LEN=(\d+)/)?.[1] || null,
-		urgp:         line.match(/URGP=(\d+)/)?.[1] || null,
-		mac:          line.match(/MAC=([\w:]+)/)?.[1] || null,
-		window:       line.match(/WINDOW=(\d+)/)?.[1] || null,
-		syn:          !!line.includes('SYN'),
+		timestamp: parseTimestamp(line), // Log timestamp
+		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null, // Source IP address
+		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null, // Destination IP address
+		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, ICMP, etc.)
+		spt: line.match(/SPT=(\d+)/)?.[1] || null, // Source port
+		dpt: line.match(/DPT=(\d+)/)?.[1] || null, // Destination port
+		in: line.match(/IN=([\w]+)/)?.[1] || null, // Input interface
+		out: line.match(/OUT=([\w]+)/)?.[1] || null, // Output interface
+		mac: line.match(/MAC=([\w:]+)/)?.[1] || null, // MAC address
+		len: line.match(/LEN=(\d+)/)?.[1] || null, // Packet length
+		ttl: line.match(/TTL=(\d+)/)?.[1] || null, // Time to live
+		id: line.match(/ID=(\d+)/)?.[1] || null, // Packet ID
+		tos: line.match(/TOS=(\S+)/)?.[1] || null, // Type of service
+		prec: line.match(/PREC=(\S+)/)?.[1] || null, // Precedence
+		res: line.match(/RES=(\S+)/)?.[1] || null, // Reserved bits
+		window: line.match(/WINDOW=(\d+)/)?.[1] || null, // TCP Window size
+		urgp: line.match(/URGP=(\d+)/)?.[1] || null, // Urgent pointer
+		ack: !!line.includes('ACK'), // ACK flag
+		syn: !!line.includes('SYN'), // SYN flag
 	};
 
 	const { srcIp, proto, dpt } = logData;

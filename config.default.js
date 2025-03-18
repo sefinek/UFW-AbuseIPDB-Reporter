@@ -21,30 +21,9 @@ exports.MAIN = {
 
 /**
  * Generates a report submission to AbuseIPDB.
- * @param {Object} logData
- * @param {string|null} logData.timestamp
- * @param {string|null} logData.In
- * @param {string|null} logData.Out
- * @param {string|null} logData.srcIp
- * @param {string|null} logData.dstIp
- * @param {string|null} logData.res
- * @param {string|null} logData.tos
- * @param {string|null} logData.prec
- * @param {string|null} logData.ttl
- * @param {string|null} logData.id
- * @param {string|null} logData.proto
- * @param {string|null} logData.spt
- * @param {string|null} logData.dpt
- * @param {string|null} logData.len
- * @param {string|null} logData.urgp
- * @param {string|null} logData.mac
- * @param {string|null} logData.window
- * @param {boolean} logData.syn
- * @param {string|null} fullLog
- * @param {string|null} serverName
  * @returns {string} A formatted string report.
  */
-exports.REPORT_COMMENT = ({ timestamp, In, Out, srcIp, dstIp, res, tos, prec, ttl, id, proto, spt, dpt, len, urgp, mac, window, syn }, fullLog, serverName) =>
+exports.REPORT_COMMENT = ({ timestamp, srcIp, dstIp, proto, spt, dpt, In, Out, mac, len, ttl, id, tos, prec, res, window, urgp, syn }, fullLog, serverName) =>
 	`Blocked by UFW ${serverName ? `on ${serverName} ` : ''}[${dpt || 'N/A'}/${proto?.toLowerCase() || 'N/A'}]
 Source port: ${spt || 'N/A'}
 TTL: ${ttl || 'N/A'}
