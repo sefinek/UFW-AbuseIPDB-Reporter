@@ -117,13 +117,15 @@ const processLogLine = async (line, test = false) => {
 };
 
 (async () => {
-	log(0, `v${version} (https://github.com/sefinek/UFW-AbuseIPDB-Reporter)`);
+	log(0, `Version ${version} - https://github.com/sefinek/UFW-AbuseIPDB-Reporter`);
 
 	loadReportedIPs();
+
+	log(0, 'Fetching your IP addresses...');
 	await refreshServerIPs();
 
 	if (!fs.existsSync(UFW_LOG_FILE)) {
-		log(2, `Log file ${UFW_LOG_FILE} does not exist.`);
+		log(2, `Log file ${UFW_LOG_FILE} does not exist`);
 		return;
 	}
 
@@ -134,7 +136,7 @@ const processLogLine = async (line, test = false) => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
 				fileOffset = 0;
-				log(1, 'The file has been truncated, and the offset has been reset.');
+				log(1, 'The file has been truncated, and the offset has been reset');
 			}
 
 			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' }).on('data', chunk => {
