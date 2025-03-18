@@ -140,10 +140,13 @@ const processLogLine = async line => {
 		});
 
 	// Auto updates
-	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE) await require('./scripts/services/updates.js')();
+	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') await require('./scripts/services/updates.js')();
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
-	await discordWebhooks(0, `[UFW-AbuseIPDB-Reporter](https://github.com/sefinek/UFW-AbuseIPDB-Reporter) has been successfully launched on the device \`${SERVER_ID}\`.`);
+	// Final
+	if (SERVER_ID !== 'development') {
+		await discordWebhooks(0, `[UFW-AbuseIPDB-Reporter](https://github.com/sefinek/UFW-AbuseIPDB-Reporter) has been successfully launched on the device \`${SERVER_ID}\`.`);
+	}
 
 	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
 	log(0, '=====================================================================');
