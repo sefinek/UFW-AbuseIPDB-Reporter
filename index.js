@@ -5,7 +5,7 @@
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
-const isLocalIP = require('./scripts/utils/isLocalIP.js');
+const parseTimestamp = require('./scripts/utils/parseTimestamp.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const log = require('./scripts/utils/log.js');
 const axios = require('./scripts/services/axios.js');
@@ -36,10 +36,8 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 const processLogLine = async line => {
 	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring line: ${line}`);
 
-	const timestampMatch = line.match(/\[(\d+\.\d+)]/);
 	const logData = {
-		timestampOld: line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]\d{2}:\d{2})?/)?.[0] || null,
-		timestampNew: (timestampMatch ? parseFloat(timestampMatch[1]) : null) || null,
+		timestamp:    parseTimestamp(line),
 		In:           line.match(/IN=([\d.]+)/)?.[1] || null,
 		Out:          line.match(/OUT=([\d.]+)/)?.[1] || null,
 		srcIp:        line.match(/SRC=([\d.]+)/)?.[1] || null,
@@ -61,26 +59,27 @@ const processLogLine = async line => {
 
 	const { srcIp, proto, dpt } = logData;
 	if (!srcIp) {
-		log(1, `Missing SRC in log line: ${line}`);
-		return;
+		return log(1, `Missing SRC in log line: ${line}`);
 	}
 
 	if (serverAddress().includes(srcIp)) {
-		log(0, `Ignoring own IP address: ${srcIp}`);
-		return;
+		return log(0, `Ignoring own IP address: ${srcIp}`);
 	}
 
-	if (isLocalIP(srcIp)) {
-		log(0, `Ignoring local/private IP: ${srcIp}`);
-		return;
+	const ips = serverAddress();
+	if (!Array.isArray(ips)) {
+		return log(1, 'For some reason, \'ips\' is not an array');
+	}
+
+	if (ips.includes(srcIp)) {
+		return log(0, `Ignoring own IP address: ${srcIp}`);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
 	// TCP connections can only be reported if they complete the three-way handshake. UDP connections cannot be reported.
 	// More: https://www.abuseipdb.com/reporting-policy
 	if (proto === 'UDP') {
-		log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`);
-		return;
+		return log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`);
 	}
 
 	if (isIPReportedRecently(srcIp)) {
