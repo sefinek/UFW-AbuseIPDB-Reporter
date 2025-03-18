@@ -9,7 +9,7 @@ const parseTimestamp = require('./scripts/utils/parseTimestamp.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const log = require('./scripts/utils/log.js');
 const axios = require('./scripts/services/axios.js');
-const serverAddress = require('./scripts/services/fetchServerIP.js');
+const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
 const discordWebhooks = require('./scripts/services/discord.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
@@ -33,55 +33,59 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 	}
 };
 
-const processLogLine = async line => {
+const toNumber = (str, regex) => {
+	const parsed = str.match(regex)?.[1];
+	return parsed ? Number(parsed) : parsed;
+};
+
+const processLogLine = async (line, test = false) => {
 	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring invalid line: ${line}`);
 
 	const logData = {
-		timestamp: parseTimestamp(line), // Log timestamp
+		date: parseTimestamp(line), // Log timestamp
 		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null, // Source IP address
 		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null, // Destination IP address
 		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, ICMP, etc.)
-		spt: line.match(/SPT=(\d+)/)?.[1] || null, // Source port
-		dpt: line.match(/DPT=(\d+)/)?.[1] || null, // Destination port
+		spt: toNumber(line, /SPT=(\d+)/), // Source port
+		dpt: toNumber(line, /DPT=(\d+)/), // Destination port
 		in: line.match(/IN=(\w+)/)?.[1] || null, // Input interface
 		out: line.match(/OUT=(\w+)/)?.[1] || null, // Output interface
 		mac: line.match(/MAC=([\w:]+)/)?.[1] || null, // MAC address
-		len: line.match(/LEN=(\d+)/)?.[1] || null, // Packet length
-		ttl: line.match(/TTL=(\d+)/)?.[1] || null, // Time to live
-		id: line.match(/ID=(\d+)/)?.[1] || null, // Packet ID
+		len: toNumber(line, /LEN=(\d+)/), // Packet length
+		ttl: toNumber(line, /TTL=(\d+)/), // Time to live
+		id: toNumber(line, /ID=(\d+)/), // Packet ID
 		tos: line.match(/TOS=(\S+)/)?.[1] || null, // Type of service
 		prec: line.match(/PREC=(\S+)/)?.[1] || null, // Precedence
 		res: line.match(/RES=(\S+)/)?.[1] || null, // Reserved bits
-		window: line.match(/WINDOW=(\d+)/)?.[1] || null, // TCP Window size
-		urgp: line.match(/URGP=(\d+)/)?.[1] || null, // Urgent pointer
+		window: toNumber(line, /WINDOW=(\d+)/), // TCP Window size
+		urgp: toNumber(line, /URGP=(\d+)/), // Urgent pointer
 		ack: !!line.includes('ACK'), // ACK flag
 		syn: !!line.includes('SYN'), // SYN flag
 	};
 
 	const { srcIp, proto, dpt } = logData;
 	if (!srcIp) {
-		return log(1, `Missing SRC in log line: ${line}`);
+		return log(1, `Missing SRC in the log line: ${line}`);
 	}
 
-	if (serverAddress().includes(srcIp)) {
-		return log(0, `Ignoring own IP address: ${srcIp}`);
-	}
-
-	const ips = serverAddress();
+	const ips = getServerIPs();
 	if (!Array.isArray(ips)) {
 		return log(1, 'For some reason, \'ips\' is not an array');
 	}
 
 	if (ips.includes(srcIp)) {
-		return log(0, `Ignoring own IP address: ${srcIp}`);
+		return log(1, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
 	// TCP connections can only be reported if they complete the three-way handshake. UDP connections cannot be reported.
-	// More: https://www.abuseipdb.com/reporting-policy
+	// Read more: https://www.abuseipdb.com/reporting-policy
 	if (proto === 'UDP') {
 		return log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`);
 	}
+
+	// Testing
+	if (test) return logData;
 
 	if (isIPReportedRecently(srcIp)) {
 		const lastReportedTime = reportedIPs.get(srcIp);
@@ -116,6 +120,7 @@ const processLogLine = async line => {
 	log(0, `v${version} (https://github.com/sefinek/UFW-AbuseIPDB-Reporter)`);
 
 	loadReportedIPs();
+	await refreshServerIPs();
 
 	if (!fs.existsSync(UFW_LOG_FILE)) {
 		log(2, `Log file ${UFW_LOG_FILE} does not exist.`);
@@ -153,3 +158,5 @@ const processLogLine = async line => {
 
 	process.send && process.send('ready');
 })();
+
+module.exports = processLogLine;
