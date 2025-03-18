@@ -45,7 +45,7 @@ const processLogLine = async (line, test = false) => {
 		date: parseTimestamp(line), // Log timestamp
 		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null, // Source IP address
 		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null, // Destination IP address
-		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, ICMP, etc.)
+		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, etc.)
 		spt: toNumber(line, /SPT=(\d+)/), // Source port
 		dpt: toNumber(line, /DPT=(\d+)/), // Destination port
 		in: line.match(/IN=(\w+)/)?.[1] || null, // Input interface
