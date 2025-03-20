@@ -121,8 +121,9 @@ const processLogLine = async (line, test = false) => {
 
 	loadReportedIPs();
 
-	log(0, 'Fetching your IP addresses...');
+	log(0, 'Trying to fetch your IPv4 and IPv6 address from api.sefinek.net...');
 	await refreshServerIPs();
+	log(0, `Fetched ${getServerIPs()?.length} of your IP addresses. If any of them accidentally appear in the UFW logs, they will be ignored.`);
 
 	if (!fs.existsSync(UFW_LOG_FILE)) {
 		log(2, `Log file ${UFW_LOG_FILE} does not exist`);
@@ -156,8 +157,6 @@ const processLogLine = async (line, test = false) => {
 	}
 
 	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
-	log(0, '=====================================================================');
-
 	process.send && process.send('ready');
 })();
 

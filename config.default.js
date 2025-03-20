@@ -3,7 +3,8 @@ exports.MAIN = {
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/tmp/ufw-abuseipdb-reporter.cache',
 	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver1'). If you don't want to define it, leave the value as null.
-	IP_REFRESH_SCHEDULE: '*/20 * * * *', // Cron: How often should the script check the IP address assigned by the ISP to prevent accidental self-reporting? Default: every 20 minutes
+	IP_REFRESH_SCHEDULE: '0 */6 * * *', // Cron: How often should the script check the IP address assigned by the ISP to prevent accidental self-reporting? Default: every 6 hours
+	IPv6_SUPPORT: true, // Specifies whether the device has been assigned an IPv6 address.
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
