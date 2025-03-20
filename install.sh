@@ -18,7 +18,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 10.02.2025 <<
+                 >> Made by sefinek.net || Last update: 20.03.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -230,12 +230,12 @@ echo "🌌 Checking PM2 status..."
 pm2 status
 
 echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' command to monitor logs in real time."
+echo -e "\n⚙️ More settings can be found in the file: $PWD/config.js"
 
 echo -e "\n====================================== Summary ======================================"
 echo "🖥️ Server ID     : ${server_id:-null}"
 echo "🔑 API Key       : $api_token"
 echo "📂 Script        : $PWD"
-echo "⚙️ Config File   : $PWD/config.js"
 
 echo -e "\n====================================== Support ======================================"
 echo "📩 Email         : contact@sefinek.net"
