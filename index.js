@@ -65,16 +65,16 @@ const processLogLine = async (line, test = false) => {
 
 	const { srcIp, proto, dpt } = logData;
 	if (!srcIp) {
-		return log(1, `Missing SRC in the log line: ${line}`);
+		return log(2, `Missing SRC in the log line: ${line}`);
 	}
 
 	const ips = getServerIPs();
 	if (!Array.isArray(ips)) {
-		return log(1, 'For some reason, \'ips\' is not an array');
+		return log(2, 'For some reason, \'ips\' is not an array');
 	}
 
 	if (ips.includes(srcIp)) {
-		return log(1, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
+		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
