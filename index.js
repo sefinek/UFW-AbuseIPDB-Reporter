@@ -84,7 +84,7 @@ const processLogLine = async (line, test = false) => {
 		return log(0, `Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`);
 	}
 
-	// Testing
+	// Tests
 	if (test) return logData;
 
 	if (isIPReportedRecently(srcIp)) {
