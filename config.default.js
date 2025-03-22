@@ -58,10 +58,7 @@ const categories = {
 		6669: '14,8', // Port Scan | Fraud VoIP
 		9999: '14,6', // Port Scan | Ping of Death
 	},
-	UDP: {
-		53: '14,1,2', // Port Scan | DNS Compromise | DNS Poisoning
-		123: '14,17', // Port Scan | Spoofing
-	},
+	UDP: {},
 };
 
 exports.DETERMINE_CATEGORIES = ({ proto, dpt }) => categories[proto]?.[dpt] || '14'; // Default: Port Scan
