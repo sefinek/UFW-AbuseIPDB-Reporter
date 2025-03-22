@@ -11,7 +11,7 @@ exports.MAIN = {
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
 
 	// Automatic Updates
-	AUTO_UPDATE_ENABLED: true, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
+	AUTO_UPDATE_ENABLED: false, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
 	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // CRON: Schedule for automatic script updates. Default: every day at 18:00
 
 	// Discord Webhooks
