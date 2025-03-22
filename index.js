@@ -108,7 +108,7 @@ const processLogLine = async (line, test = false) => {
 	}
 
 	const categories = config.DETERMINE_CATEGORIES(logData);
-	const comment = config.REPORT_COMMENT(logData, line, SERVER_ID);
+	const comment = config.REPORT_COMMENT(logData, line);
 
 	if (await reportToAbuseIPDb(logData, categories, comment)) {
 		markIPAsReported(srcIp);
