@@ -5,10 +5,11 @@
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
+const isLocalIP = require('./scripts/utils/isLocalIP.js');
 const parseTimestamp = require('./scripts/utils/parseTimestamp.js');
-const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const log = require('./scripts/utils/log.js');
-const axios = require('./scripts/services/axios.js');
+const { post } = require('./scripts/services/axios.js');
+const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
 const discordWebhooks = require('./scripts/services/discord.js');
 const config = require('./config.js');
@@ -19,7 +20,7 @@ let fileOffset = 0;
 
 const reportToAbuseIPDb = async (logData, categories, comment) => {
 	try {
-		const { data: res } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
+		const { data: res } = await post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
 			ip: logData.srcIp,
 			categories,
 			comment,
@@ -75,6 +76,10 @@ const processLogLine = async (line, test = false) => {
 
 	if (ips.includes(srcIp)) {
 		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
+	}
+
+	if (isLocalIP(srcIp)) {
+		return log(0, `Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
