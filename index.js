@@ -29,7 +29,7 @@ const reportToAbuseIPDb = async (logData, categories, comment) => {
 		log(0, `Reported ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		log(2, `Failed to report ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`);
+		log(2, `Failed to report ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; ${err.message}\n${JSON.stringify(err.response.data?.errors || err.response.data)}`, 0);
 		return false;
 	}
 };
@@ -40,7 +40,7 @@ const toNumber = (str, regex) => {
 };
 
 const processLogLine = async (line, test = false) => {
-	if (!line.includes('[UFW BLOCK]')) return log(0, `Ignoring invalid line: ${line}`);
+	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring invalid line: ${line}`, 1);
 
 	const logData = {
 		date: parseTimestamp(line), // Log timestamp
@@ -65,21 +65,17 @@ const processLogLine = async (line, test = false) => {
 	};
 
 	const { srcIp, proto, dpt } = logData;
-	if (!srcIp) {
-		return log(2, `Missing SRC in the log line: ${line}`);
-	}
+	if (!srcIp) return log(2, `Missing SRC in the log line: ${line}`, 1);
 
 	const ips = getServerIPs();
-	if (!Array.isArray(ips)) {
-		return log(2, 'For some reason, \'ips\' is not an array');
-	}
+	if (!Array.isArray(ips)) return log(2, 'For some reason, \'ips\' is not an array', 1);
 
 	if (ips.includes(srcIp)) {
-		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
+		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`, 1);
 	}
 
 	if (isLocalIP(srcIp)) {
-		return log(0, `Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`);
+		return log(0, `Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`, 1);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
@@ -142,7 +138,7 @@ const processLogLine = async (line, test = false) => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
 				fileOffset = 0;
-				log(1, 'The file has been truncated, and the offset has been reset');
+				log(1, 'The file has been truncated, and the offset has been reset', 1);
 			}
 
 			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' }).on('data', chunk => {
