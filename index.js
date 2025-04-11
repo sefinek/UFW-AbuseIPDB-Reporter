@@ -18,19 +18,22 @@ const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED, AUTO_UP
 
 let fileOffset = 0;
 
-const reportToAbuseIPDb = async (logData, categories, comment) => {
+const reportIp = async (data, categories, comment) => {
 	try {
 		const { data: res } = await post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
-			ip: logData.srcIp,
+			ip: data.srcIp,
 			categories,
 			comment,
 		}), { headers: { 'Key': ABUSEIPDB_API_KEY } });
 
-		log(0, `Reported ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
+		log(0, `Reported ${data.srcIp} [${data.dpt}/${data.proto}]; ID: ${data.id}; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		log(err.response?.status === 429 ? 0 : 2,
-			`Failed to report ${logData.srcIp} [${logData.dpt}/${logData.proto}]; ID: ${logData.id}; ${err.response?.data?.errors ? `\n${JSON.stringify(err.response.data.errors)}` : err.message}`, 1);
+		log(
+			err.response?.status === 429 ? 0 : 2,
+			`Failed to report ${data.srcIp} [${data.dpt}/${data.proto}]; ID: ${data.id}; ${err.response?.data?.errors ? `\n${JSON.stringify(err.response.data.errors)}` : err.message}`,
+			err.response?.status === 429 ? 0 : 1
+		);
 		return false;
 	}
 };
@@ -43,7 +46,7 @@ const toNumber = (str, regex) => {
 const processLogLine = async (line, test = false) => {
 	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring invalid line: ${line}`, 1);
 
-	const logData = {
+	const data = {
 		date: parseTimestamp(line), // Log timestamp
 		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null, // Source IP address
 		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null, // Destination IP address
@@ -65,18 +68,18 @@ const processLogLine = async (line, test = false) => {
 		syn: !!line.includes('SYN'), // SYN flag
 	};
 
-	const { srcIp, proto, dpt } = logData;
+	const { srcIp, proto, dpt } = data;
 	if (!srcIp) return log(2, `Missing SRC in the log line: ${line}`, 1);
 
 	const ips = getServerIPs();
 	if (!Array.isArray(ips)) return log(2, 'For some reason, \'ips\' is not an array', 1);
 
 	if (ips.includes(srcIp)) {
-		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`, 1);
+		return log(0, `Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 1);
 	}
 
 	if (isLocalIP(srcIp)) {
-		return log(0, `Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${logData.id}`, 1);
+		return log(0, `Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 1);
 	}
 
 	// Report MUST NOT be of an attack where the source address is likely spoofed i.e. SYN floods and UDP floods.
@@ -87,7 +90,7 @@ const processLogLine = async (line, test = false) => {
 	}
 
 	// Tests
-	if (test) return logData;
+	if (test) return data;
 
 	if (isIPReportedRecently(srcIp)) {
 		const lastReportedTime = reportedIPs.get(srcIp);
@@ -109,10 +112,10 @@ const processLogLine = async (line, test = false) => {
 		return;
 	}
 
-	const categories = config.DETERMINE_CATEGORIES(logData);
-	const comment = config.REPORT_COMMENT(logData, line);
+	const categories = config.DETERMINE_CATEGORIES(data);
+	const comment = config.REPORT_COMMENT(data, line);
 
-	if (await reportToAbuseIPDb(logData, categories, comment)) {
+	if (await reportIp(data, categories, comment)) {
 		markIPAsReported(srcIp);
 		saveReportedIPs();
 	}
