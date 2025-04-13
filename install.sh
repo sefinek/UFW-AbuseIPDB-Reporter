@@ -223,6 +223,21 @@ sudo chown -R "$USER":"$USER" /var/cache/sefinek
 echo "🔒 Changing permissions for $ufw_log_path..."
 sudo chmod 644 "$ufw_log_path"
 
+# Prepare UFW
+echo "🔧 Preparing UFW..."
+if ! sudo ufw status | grep -q "Status: active"; then
+    echo "❌ UFW is not active. Please enable it first."
+    exit 1
+fi
+
+if ! sudo ufw status verbose | grep -q "Logging: on ("; then
+    echo "🔧 Enabling UFW logging (low)..."
+    sudo ufw logging low
+else
+    echo "✅ UFW logging is already enabled"
+fi
+
+
 # Install PM2
 echo "📦 Installing PM2..."
 sudo npm install pm2 -g --silent
