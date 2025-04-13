@@ -30,10 +30,7 @@ let LAST_RATELIMIT_LOG = 0, LAST_STATS_LOG = 0, RATELIMIT_RESET = nextRateLimitR
 
 const checkRateLimit = () => {
 	const now = Date.now();
-	if (now - LAST_STATS_LOG >= BUFFER_STATS_INTERVAL && BULK_REPORT_BUFFER.size > 0) {
-		log(0, `Buffer size: ${BULK_REPORT_BUFFER.size} IPs currently queued`);
-		LAST_STATS_LOG = now;
-	}
+	if (now - LAST_STATS_LOG >= BUFFER_STATS_INTERVAL && BULK_REPORT_BUFFER.size > 0) LAST_STATS_LOG = now;
 
 	if (ABUSE_STATE.isLimited) {
 		if (now >= RATELIMIT_RESET.getTime()) {
