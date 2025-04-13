@@ -118,7 +118,7 @@ const processLogLine = async (line, test = false) => {
 	if (!line.includes('[UFW BLOCK]')) return log(1, `Ignoring invalid line: ${line}`, 1);
 
 	const data = {
-		date: parseTimestamp(line), // Log timestamp
+		timestamp: parseTimestamp(line), // Log timestamp
 		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null, // Source IP address
 		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null, // Destination IP address
 		proto: line.match(/PROTO=(\S+)/)?.[1] || null, // Protocol (TCP, UDP, etc.)
