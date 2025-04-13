@@ -85,7 +85,7 @@ After a successful installation, the script will run continuously in the backgro
 Servers are constantly scanned by bots, usually looking for security vulnerabilities and similar weaknesses.
 So don't be surprised if the number of reports sent to AbuseIPDB exceeds a thousand the next day.
 
-### 🔍 Checking logs
+### 🔍 Check logs
 ```bash
 pm2 logs ufw-abuseipdb
 ```
