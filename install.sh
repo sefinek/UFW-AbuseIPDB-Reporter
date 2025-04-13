@@ -42,7 +42,7 @@ yes_no_prompt() {
 
 # Function to check and install missing dependencies
 check_dependencies() {
-    local dependencies=(curl node git)
+    local dependencies=(curl software-properties-common node git)
     local missing=()
 
     for dependency in "${dependencies[@]}"; do
