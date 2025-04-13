@@ -20,8 +20,8 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 ## ✅ Features
 1. **Easy Configuration** – The [`config.js`](config.default.js) file allows for quick and simple customization.
 2. **Simple Installer** – Enables fast and seamless integration deployment.
-3. **Self-IP Protection (IPv4 & IPv6)** – The script will never report IP addresses belonging to you or your server, even if you're using a dynamic IP address.
-4. **Bulk Reporting Support** – If the script encounters a rate limit, it will start buffering collected IPs and send a bulk report.
+3. **Bulk Reporting Support** – If the script encounters a rate limit, it will start buffering collected IPs and send a bulk report.
+4. **Self-IP Protection (IPv4 & IPv6)** – The script will never report IP addresses belonging to you or your server, even if you're using a dynamic IP address.
 5. **Local IP Filtering** – Local IP addresses will never be reported.
 6. **Discord Webhooks Integration**:
    - Critical notifications
