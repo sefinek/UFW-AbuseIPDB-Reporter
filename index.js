@@ -31,7 +31,7 @@ let LAST_RATELIMIT_LOG = 0, LAST_STATS_LOG = 0, RATELIMIT_RESET = nextRateLimitR
 const checkRateLimit = () => {
 	const now = Date.now();
 	if (now - LAST_STATS_LOG >= BUFFER_STATS_INTERVAL && BULK_REPORT_BUFFER.size > 0) {
-		log(0, `📊 Buffer size: ${BULK_REPORT_BUFFER.size} IPs currently queued`);
+		log(0, `Buffer size: ${BULK_REPORT_BUFFER.size} IPs currently queued`);
 		LAST_STATS_LOG = now;
 	}
 
@@ -43,10 +43,10 @@ const checkRateLimit = () => {
 			RATELIMIT_RESET = nextRateLimitReset();
 			ABUSE_STATE.sentBulk = false;
 
-			log(0, `✅ Rate limit reset. Next reset scheduled at ${RATELIMIT_RESET.toISOString()}`, 1);
+			log(0, `Rate limit reset. Next reset scheduled at ${RATELIMIT_RESET.toISOString()}`, 1);
 		} else if (now - LAST_RATELIMIT_LOG >= RATE_LIMIT_LOG_INTERVAL) {
 			const minutesLeft = Math.ceil((RATELIMIT_RESET.getTime() - now) / 60000);
-			log(0, `⏳ AbuseIPDB rate limit is active. Collected ${BULK_REPORT_BUFFER.size} IPs. Waiting for reset in ${minutesLeft} minute(s) (${RATELIMIT_RESET.toISOString()})`, 1);
+			log(0, `AbuseIPDB rate limit is active. Collected ${BULK_REPORT_BUFFER.size} IPs. Waiting for reset in ${minutesLeft} minute(s) (${RATELIMIT_RESET.toISOString()})`, 1);
 			LAST_RATELIMIT_LOG = now;
 		}
 	}
