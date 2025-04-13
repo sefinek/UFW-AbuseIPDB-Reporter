@@ -18,7 +18,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 20.03.2025 <<
+                 >> Made by sefinek.net || Last update: 13.04.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -193,16 +193,18 @@ else
     exit 1
 fi
 
-# Create logs directory
-echo "📂 Creating /var/log/ufw-abuseipdb directory..."
+# Create directories & set permissions
+echo "📂 Creating directories and setting permissions..."
 sudo mkdir -p /var/log/ufw-abuseipdb
-sudo chown "$USER":"$USER" /var/log/ufw-abuseipdb -R
+sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
+sudo mkdir -p /var/cache/sefinek
+sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
 
 # Change permissions for UFW log file
 echo "🔒 Changing permissions for $ufw_log_path..."
 sudo chmod 644 "$ufw_log_path"
 
-# Install pm2
+# Install PM2
 echo "📦 Installing PM2..."
 sudo npm install pm2 -g -silent
 
