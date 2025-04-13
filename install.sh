@@ -124,12 +124,20 @@ validate_token() {
 
 # Prepare UFW
 echo "🔧 Preparing UFW..."
-if ! sudo ufw status | grep -q "Status: active"; then
-    echo "❌ UFW is not active. Please enable it first."
-    exit 1
+UFW_STATUS=$(LANG=C sudo ufw status verbose)
+if ! grep -q "^Status: active" <<< "$UFW_STATUS"; then
+    echo "❌ UFW appears to be inactive. Do you want to enable it?"
+    if yes_no_prompt "🔧 Would you like to enable UFW now?"; then
+        sudo ufw enable
+        echo "✅ UFW has been successfully enabled"
+        UFW_STATUS=$(LANG=C sudo ufw status verbose)
+    else
+        echo "❌ UFW is required to proceed. Exiting..."
+        exit 1
+    fi
 fi
 
-if ! sudo ufw status verbose | grep -q "Logging: on ("; then
+if ! grep -q "^Logging: on (" <<< "$UFW_STATUS"; then
     echo "🔧 Enabling UFW logging (low)..."
     sudo ufw logging low
 else
