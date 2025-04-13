@@ -199,7 +199,7 @@ const processLogLine = async (line, test = false) => {
 	loadBufferFromFile();
 
 	if (BULK_REPORT_BUFFER.size > 0 && !ABUSE_STATE.isLimited) {
-		log(0, `📤 Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
+		log(0, `Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
 		await sendBulkReport();
 	}
 
