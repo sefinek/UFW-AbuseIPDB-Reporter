@@ -80,7 +80,7 @@ check_dependencies() {
     done
 
     if [[ ${#missing[@]} -gt 0 ]]; then
-        echo "🚨 Missing dependencies: ${missing[*]}"
+        echo "🚨 Found missing dependencies: ${missing[*]}"
         for dep in "${missing[@]}"; do
             if yes_no_prompt "📦 Do you want to install $dep?"; then
                 install_dep "$dep" || { echo "❌ Installation failed for $dep. Exiting..."; exit 1; }
