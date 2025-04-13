@@ -12,7 +12,7 @@ const axios = require('./scripts/services/axios.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
-const discordWebhooks = require('./scripts/services/discordWebhooks.js');
+const sendWebhook = require('./scripts/services/discordWebhooks.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
 const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOKS_ENABLED, DISCORD_WEBHOOKS_URL } = config.MAIN;
@@ -235,7 +235,7 @@ const processLogLine = async (line, test = false) => {
 
 	// Final
 	if (SERVER_ID !== 'development') {
-		await discordWebhooks(0, `[UFW-AbuseIPDB-Reporter](https://github.com/sefinek/UFW-AbuseIPDB-Reporter) has been successfully launched on the device \`${SERVER_ID}\`.`);
+		await sendWebhook(0, `[UFW-AbuseIPDB-Reporter](https://github.com/sefinek/UFW-AbuseIPDB-Reporter) has been successfully launched on the device \`${SERVER_ID}\`.`);
 	}
 
 	log(0, `Ready! Now monitoring: ${UFW_LOG_FILE}`);
