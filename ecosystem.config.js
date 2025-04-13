@@ -6,9 +6,9 @@ module.exports = {
 		// Logging configuration
 		log_date_format: 'HH:mm:ss.SSS DD.MM.YYYY',
 		merge_logs: true,
-		log_file: '/var/log/ufw-abuseipdb/combined.log',
-		out_file: '/var/log/ufw-abuseipdb/out.log',
-		error_file: '/var/log/ufw-abuseipdb/error.log',
+		log_file: '~/logs/other/ufw-abuseipdb/combined.log',
+		out_file: '~/logs/other/ufw-abuseipdb/out.log',
+		error_file: '~/logs/other/ufw-abuseipdb/error.log',
 
 		// Application restart policy settings
 		wait_ready: true,

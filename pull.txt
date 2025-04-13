@@ -1,1 +1,0 @@
-git pull && pm2 restart ufw-abuseipdb && pm2 logs ufw-abuseipdb
