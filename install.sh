@@ -45,13 +45,34 @@ check_dependencies() {
     local dependencies=(curl software-properties-common node git)
     local missing=()
 
+    # Helper: install dependency
+    install_dep() {
+        local dep=$1
+        case $dep in
+            node)
+                curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+                sudo bash nodesource_setup.sh
+                sudo apt-get install -y nodejs
+                rm -f nodesource_setup.sh
+                ;;
+            git)
+                sudo add-apt-repository -y ppa:git-core/ppa
+                sudo apt-get update
+                sudo apt-get install -y git
+                ;;
+            *)
+                sudo apt-get install -y "$dep"
+                ;;
+        esac
+    }
+
     for dependency in "${dependencies[@]}"; do
         if ! command -v "$dependency" &> /dev/null; then
             missing+=("$dependency")
         else
             echo "✅ $dependency is installed ($(command -v "$dependency"))"
-            if $dependency --version &> /dev/null; then
-                $dependency --version
+            if "$dependency" --version &> /dev/null; then
+                "$dependency" --version | head -n 1
             else
                 echo "ℹ️ Version information for $dependency is unavailable"
             fi
@@ -62,11 +83,7 @@ check_dependencies() {
         echo "🚨 Missing dependencies: ${missing[*]}"
         for dep in "${missing[@]}"; do
             if yes_no_prompt "📦 Do you want to install $dep?"; then
-                case $dep in
-                    curl ) sudo apt-get install -y curl ;;
-                    node ) curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && sudo bash nodesource_setup.sh && sudo apt-get install -y nodejs && rm -f nodesource_setup.sh ;;
-                    git ) sudo add-apt-repository ppa:git-core/ppa && sudo apt-get update && sudo apt-get -y install git ;;
-                esac
+                install_dep "$dep" || { echo "❌ Installation failed for $dep. Exiting..."; exit 1; }
             else
                 echo "❌ Cannot proceed without $dep. Exiting..."
                 exit 1
