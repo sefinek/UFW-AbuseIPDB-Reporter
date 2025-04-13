@@ -96,7 +96,7 @@ check_dependencies() {
 }
 
 # Check dependencies before proceeding
-check_dependencies curl node git
+check_dependencies curl node git ufw
 
 # Function to validate AbuseIPDB API key
 validate_token() {
