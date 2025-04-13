@@ -5,36 +5,107 @@
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
+const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const isLocalIP = require('./scripts/utils/isLocalIP.js');
 const parseTimestamp = require('./scripts/utils/parseTimestamp.js');
 const log = require('./scripts/utils/log.js');
-const { post } = require('./scripts/services/axios.js');
+const axios = require('./scripts/services/axios.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
-const discordWebhooks = require('./scripts/services/discord.js');
+const discordWebhooks = require('./scripts/services/discordWebhooks.js');
 const config = require('./config.js');
 const { version } = require('./package.json');
 const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOKS_ENABLED, DISCORD_WEBHOOKS_URL } = config.MAIN;
 
-let fileOffset = 0;
+const ABUSE_STATE = { isLimited: false, isBuffering: false, sentBulk: false };
+const RATE_LIMIT_LOG_INTERVAL = 10 * 60 * 1000;
+const BUFFER_STATS_INTERVAL = 5 * 60 * 1000;
 
-const reportIp = async (data, categories, comment) => {
+const nextRateLimitReset = () => {
+	const now = new Date();
+	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 1));
+};
+
+let LAST_RATELIMIT_LOG = 0, LAST_STATS_LOG = 0, RATELIMIT_RESET = nextRateLimitReset(), fileOffset = 0;
+
+const checkRateLimit = () => {
+	const now = Date.now();
+	if (now - LAST_STATS_LOG >= BUFFER_STATS_INTERVAL && BULK_REPORT_BUFFER.size > 0) {
+		log(0, `📊 Buffer size: ${BULK_REPORT_BUFFER.size} IPs currently queued`);
+		LAST_STATS_LOG = now;
+	}
+
+	if (ABUSE_STATE.isLimited) {
+		if (now >= RATELIMIT_RESET.getTime()) {
+			ABUSE_STATE.isLimited = false;
+			ABUSE_STATE.isBuffering = false;
+			if (!ABUSE_STATE.sentBulk && BULK_REPORT_BUFFER.size > 0) sendBulkReport();
+			RATELIMIT_RESET = nextRateLimitReset();
+			ABUSE_STATE.sentBulk = false;
+
+			log(0, `✅ Rate limit reset. Next reset scheduled at ${RATELIMIT_RESET.toISOString()}`, 1);
+		} else if (now - LAST_RATELIMIT_LOG >= RATE_LIMIT_LOG_INTERVAL) {
+			const minutesLeft = Math.ceil((RATELIMIT_RESET.getTime() - now) / 60000);
+			log(0, `⏳ AbuseIPDB rate limit is active. Collected ${BULK_REPORT_BUFFER.size} IPs. Waiting for reset in ${minutesLeft} minute(s) (${RATELIMIT_RESET.toISOString()})`, 1);
+			LAST_RATELIMIT_LOG = now;
+		}
+	}
+};
+
+const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', id, timestamp }, categories, comment) => {
+	if (!srcIp) return log(2, ' Missing source IP (srcIp)', 1);
+
+	if (getServerIPs().includes(srcIp)) return;
+	if (isIPReportedRecently(srcIp)) return;
+
+	checkRateLimit();
+
+	if (ABUSE_STATE.isBuffering) {
+		if (BULK_REPORT_BUFFER.has(srcIp)) return;
+
+		BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
+		saveBufferToFile();
+		log(0, `Queued ${srcIp} for bulk report (collected ${BULK_REPORT_BUFFER.size} IPs)`);
+		return;
+	}
+
 	try {
-		const { data: res } = await post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
-			ip: data.srcIp,
+		const { data: res } = await axios.post('https://api.abuseipdb.com/api/v2/report', new URLSearchParams({
+			ip: srcIp,
 			categories,
 			comment,
 		}), { headers: { 'Key': ABUSEIPDB_API_KEY } });
 
-		log(0, `Reported ${data.srcIp} [${data.dpt}/${data.proto}]; ID: ${data.id}; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
+		log(0, `Reported ${srcIp} [${dpt}/${proto}]; ID: ${id}; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		log(
-			err.response?.status === 429 ? 0 : 2,
-			`Failed to report ${data.srcIp} [${data.dpt}/${data.proto}]; ID: ${data.id}; ${err.response?.data?.errors ? `\n${JSON.stringify(err.response.data.errors)}` : err.message}`,
-			err.response?.status === 429 ? 0 : 1
-		);
-		return false;
+		if (err.response?.status === 429 && JSON.stringify(err.response?.data || {}).includes('Daily rate limit')) {
+			if (!ABUSE_STATE.isLimited) {
+				ABUSE_STATE.isLimited = true;
+				ABUSE_STATE.isBuffering = true;
+				ABUSE_STATE.sentBulk = false;
+				LAST_RATELIMIT_LOG = Date.now();
+				RATELIMIT_RESET = nextRateLimitReset();
+				log(0, `Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toISOString()}`, 1);
+			}
+
+			if (BULK_REPORT_BUFFER.has(srcIp)) {
+				log(0, `${srcIp} is already in buffer, skipping`);
+				return;
+			}
+
+			BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
+			saveBufferToFile();
+
+			log(0, `Queued ${srcIp} for bulk report due to rate limit`);
+		} else {
+			const status = err.response?.status ?? 'unknown';
+			log(
+				status === 429 ? 0 : 2,
+				`Failed to report ${srcIp} [${dpt}/${proto}];\n${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`,
+				status === 429 ? 0 : 1
+			);
+		}
 	}
 };
 
@@ -125,6 +196,12 @@ const processLogLine = async (line, test = false) => {
 	log(0, `Version ${version} - https://github.com/sefinek/UFW-AbuseIPDB-Reporter`);
 
 	loadReportedIPs();
+	loadBufferFromFile();
+
+	if (BULK_REPORT_BUFFER.size > 0 && !ABUSE_STATE.isLimited) {
+		log(0, `📤 Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
+		await sendBulkReport();
+	}
 
 	log(0, 'Trying to fetch your IPv4 and IPv6 address from api.sefinek.net...');
 	await refreshServerIPs();

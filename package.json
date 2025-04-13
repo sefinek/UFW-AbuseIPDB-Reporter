@@ -24,6 +24,9 @@
     "axios": "^1.8.4",
     "chokidar": "^4.0.3",
     "cron": "^4.1.4",
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
+    "form-data": "^4.0.2",
     "ipaddr.js": "^2.2.0",
     "simple-git": "^3.27.0"
   },
