@@ -232,7 +232,7 @@ echo "🌌 Checking PM2 status..."
 pm2 status
 
 echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' command to monitor logs in real time."
-echo -e "\n⚙️ More settings can be found in the file: $PWD/config.js"
+echo -e "⚙️ More settings can be found in the file: $PWD/config.js"
 
 echo -e "\n====================================== Summary ======================================"
 echo "🖥️ Server ID     : ${server_id:-null}"

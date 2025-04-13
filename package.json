@@ -1,6 +1,6 @@
 {
   "name": "ufw-abuseipdb-reporter",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A tool (with a simple installer) that monitors UFW firewall logs in real time and reports IP addresses to the AbuseIPDB database.",
   "homepage": "https://github.com/sefinek/UFW-AbuseIPDB-Reporter#readme",
   "bugs": {
