@@ -198,7 +198,7 @@ echo "📂 Creating directories and setting permissions..."
 sudo mkdir -p /var/log/ufw-abuseipdb
 sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
 sudo mkdir -p /var/cache/sefinek
-sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
+sudo chown -R "$USER":"$USER" /var/cache/sefinek
 
 # Change permissions for UFW log file
 echo "🔒 Changing permissions for $ufw_log_path..."
