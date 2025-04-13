@@ -42,7 +42,7 @@ yes_no_prompt() {
 
 # Function to check and install missing dependencies
 check_dependencies() {
-    local dependencies=(curl software-properties-common node git)
+    local dependencies=("$@")
     local missing=()
 
     # Helper: install dependency
@@ -56,6 +56,7 @@ check_dependencies() {
                 rm -f nodesource_setup.sh
                 ;;
             git)
+                check_dependencies software-properties-common
                 sudo add-apt-repository -y ppa:git-core/ppa
                 sudo apt-get update
                 sudo apt-get install -y git
@@ -95,7 +96,7 @@ check_dependencies() {
 }
 
 # Check dependencies before proceeding
-check_dependencies
+check_dependencies curl node git
 
 # Function to validate AbuseIPDB API key
 validate_token() {
