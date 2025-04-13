@@ -122,6 +122,20 @@ validate_token() {
     fi
 }
 
+# Prepare UFW
+echo "🔧 Preparing UFW..."
+if ! sudo ufw status | grep -q "Status: active"; then
+    echo "❌ UFW is not active. Please enable it first."
+    exit 1
+fi
+
+if ! sudo ufw status verbose | grep -q "Logging: on ("; then
+    echo "🔧 Enabling UFW logging (low)..."
+    sudo ufw logging low
+else
+    echo "✅ UFW logging is already enabled"
+fi
+
 # Check for UFW log file
 if [[ ! -f /var/log/ufw.log ]]; then
     read -r -p "🔍 /var/log/ufw.log not found. Please enter the path to your log file: " ufw_log_path
@@ -136,7 +150,7 @@ else
     echo "✅ /var/log/ufw.log exists"
 fi
 
-# Prompt for AbuseIPDB API token
+# Prompt for API token
 while true; do
     read -r -p "🔑 Please enter your AbuseIPDB API token: " api_token
     if validate_token "$api_token"; then
@@ -222,20 +236,6 @@ sudo chown -R "$USER":"$USER" /var/cache/sefinek
 # Change permissions for UFW log file
 echo "🔒 Changing permissions for $ufw_log_path..."
 sudo chmod 644 "$ufw_log_path"
-
-# Prepare UFW
-echo "🔧 Preparing UFW..."
-if ! sudo ufw status | grep -q "Status: active"; then
-    echo "❌ UFW is not active. Please enable it first."
-    exit 1
-fi
-
-if ! sudo ufw status verbose | grep -q "Logging: on ("; then
-    echo "🔧 Enabling UFW logging (low)..."
-    sudo ufw logging low
-else
-    echo "✅ UFW logging is already enabled"
-fi
 
 
 # Install PM2
