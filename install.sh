@@ -140,6 +140,9 @@ fi
 if ! grep -q "^Logging: on (" <<< "$UFW_STATUS"; then
     echo "🔧 Enabling UFW logging (low)..."
     sudo ufw logging low
+
+    echo "⏳ Waiting a moment for the ufw.log file to be created..."
+    sleep 5
 else
     echo "✅ UFW logging is already enabled"
 fi
