@@ -125,8 +125,8 @@ const processLogLine = async (line, test = false) => {
 	const ips = getServerIPs();
 	if (!Array.isArray(ips)) return log('For some reason, `ips` from `getServerIPs()` is not an array', 3, true);
 
-	if (ips.includes(srcIp)) return log(`Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, true);
-	if (isLocalIP(srcIp)) return log(`Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, true);
+	if (ips.includes(srcIp)) return log(`Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 2, true);
+	if (isLocalIP(srcIp)) return log(`Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 2, true);
 	if (proto === 'UDP') return log(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`, 0, true);
 
 	if (test) return data;
@@ -164,7 +164,7 @@ const processLogLine = async (line, test = false) => {
 	loadBufferFromFile();
 
 	if (BULK_REPORT_BUFFER.size > 0 && !ABUSE_STATE.isLimited) {
-		log(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`, 1);
+		log(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
 		await sendBulkReport();
 	}
 
@@ -184,7 +184,7 @@ const processLogLine = async (line, test = false) => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
 				fileOffset = 0;
-				log('The file has been truncated, and the offset has been reset', 2);
+				log('The file has been truncated, and the offset has been reset');
 			}
 
 			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' })
@@ -199,7 +199,7 @@ const processLogLine = async (line, test = false) => {
 	await require('./scripts/services/updates.js')();
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
-	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\`.`);
+	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\`.`, 0x59D267);
 	log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
 	process.send && process.send('ready');
 })();
