@@ -80,13 +80,13 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', id, timestamp }, ca
 				ABUSE_STATE.sentBulk = false;
 				LAST_RATELIMIT_LOG = Date.now();
 				RATELIMIT_RESET = nextRateLimitReset();
-				log(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toISOString()}`, 2);
+				log(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toISOString()}`);
 			}
 
 			if (!BULK_REPORT_BUFFER.has(srcIp)) {
 				BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
 				saveBufferToFile();
-				log(`Queued ${srcIp} for bulk report due to rate limit`, 2);
+				log(`Queued ${srcIp} for bulk report due to rate limit`, 1);
 			}
 		} else {
 			log(`Failed to report ${srcIp} [${dpt}/${proto}]; ${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`, status === 429 ? 2 : 3);
