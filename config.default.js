@@ -1,26 +1,28 @@
 exports.MAIN = {
-	// My Server
+	// Server
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/var/cache/sefinek/ufw-abuseipdb-reporter.cache',
-	SERVER_ID: null, // The server name that will be visible in the reports (e.g., 'homeserver1'). If you don't want to define it, leave the value as null.
-	IP_REFRESH_SCHEDULE: '0 */6 * * *', // CRON: How often should the script check the IP address assigned by the ISP to prevent accidental self-reporting? Default: every 6 hours
-	IPv6_SUPPORT: true, // Specifies whether the device has been assigned an IPv6 address.
+	SERVER_ID: null, // The server name that will be visible in reports (e.g., homeserver1, de1). Leave as null if you don't want to define it.
+
+	// Network
+	IP_REFRESH_SCHEDULE: '0 */6 * * *', // CRON: How often the script should check the IP address assigned by the ISP to prevent accidental self-reporting. If you have a static IP, you can set it to '0 0 1 * *' (once a month). Default: every 6 hours
+	IPv6_SUPPORT: true, // Specifies whether the device has an assigned IPv6 address.
 
 	// Reporting
 	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
-	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // The minimum time (12 hours) that must pass before reporting the same IP address again.
+	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time (12 hours) that must pass before reporting the same IP address again.
 
 	// Automatic Updates
-	AUTO_UPDATE_ENABLED: false, // Do you want the script to automatically update to the latest version using 'git pull'? (true = enabled, false = disabled)
+	AUTO_UPDATE_ENABLED: false, // Should the script automatically update to the latest version using 'git pull'? If enabled, monitor the script periodically — incompatibilities may occasionally occur with the config file.
 	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // CRON: Schedule for automatic script updates. Default: every day at 18:00
 
 	// Discord Webhooks
-	DISCORD_WEBHOOKS_ENABLED: false, // Should the script send webhooks? They will contain error reports, daily summaries related to reports, etc.
-	DISCORD_WEBHOOKS_URL: '', // Webhook URL.
+	DISCORD_WEBHOOKS_ENABLED: false, // Should the script send webhooks? They will include error reports, daily summaries of reports, etc.
+	DISCORD_WEBHOOKS_URL: '',
 };
 
 
-// Generates a report submission to AbuseIPDB.
+// Generates a report submission.
 const serverId = this.MAIN.SERVER_ID ? `on ${this.MAIN.SERVER_ID} ` : '';
 exports.REPORT_COMMENT = ({ date, srcIp, dstIp, proto, spt, dpt, In, Out, mac, len, ttl, id, tos, prec, res, window, urgp, syn }, fullLog) =>
 	`Blocked by UFW ${serverId}[${dpt || 'N/A'}/${proto?.toLowerCase() || 'N/A'}]
