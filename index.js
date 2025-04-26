@@ -199,7 +199,7 @@ const processLogLine = async (line, test = false) => {
 	await require('./scripts/services/updates.js')();
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
-	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\``);
+	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\`.`);
 	log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
 	process.send && process.send('ready');
 })();
