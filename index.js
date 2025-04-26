@@ -123,11 +123,11 @@ const processLogLine = async (line, test = false) => {
 	if (!srcIp) return log(`Missing SRC in the log line: ${line}`, 3);
 
 	const ips = getServerIPs();
-	if (!Array.isArray(ips)) return log('For some reason, `ips` from `getServerIPs()` is not an array', 3);
+	if (!Array.isArray(ips)) return log('For some reason, `ips` from `getServerIPs()` is not an array', 3, true);
 
-	if (ips.includes(srcIp)) return log(`Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 1);
-	if (isLocalIP(srcIp)) return log(`Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 1);
-	if (proto === 'UDP') return log(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`, 1);
+	if (ips.includes(srcIp)) return log(`Ignoring own IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, true);
+	if (isLocalIP(srcIp)) return log(`Ignoring local IP address! PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, true);
+	if (proto === 'UDP') return log(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt}`, 0, true);
 
 	if (test) return data;
 
@@ -144,7 +144,7 @@ const processLogLine = async (line, test = false) => {
 			minutes && `${minutes}m`,
 			(seconds || (!days && !hours && !minutes)) && `${seconds}s`,
 		].filter(Boolean).join(' ');
-		log(`${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`, 1);
+		log(`${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`);
 		return;
 	}
 
