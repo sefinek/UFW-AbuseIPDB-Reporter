@@ -1,7 +1,5 @@
-//
 //   Copyright 2024-2025 (c) by Sefinek All rights reserved.
 //                     https://sefinek.net
-//
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
