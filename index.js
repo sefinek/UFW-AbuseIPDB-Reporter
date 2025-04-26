@@ -196,11 +196,11 @@ const processLogLine = async (line, test = false) => {
 				});
 		});
 
-	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') await require('./scripts/services/updates.js')();
+	await require('./scripts/services/updates.js')();
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
 	if (SERVER_ID !== 'development') {
-		await sendWebhook(0, `[${repoName}](${repoURL}) has been successfully launched on the device \`${SERVER_ID}\`.`);
+		await sendWebhook(`[${repoName}](${repoURL}) has been successfully launched on the device \`${SERVER_ID}\``);
 	}
 
 	log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
