@@ -17,7 +17,7 @@ exports.MAIN = {
 	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // CRON: Schedule for automatic script updates. Default: every day at 18:00
 
 	// Discord Webhooks
-	DISCORD_WEBHOOKS_ENABLED: false, // Should the script send webhooks? They will include error reports, daily summaries of reports, etc.
+	DISCORD_WEBHOOKS_ENABLED: false, // Should the script send webhooks? They will include error reports, daily summaries, and other related information.
 	DISCORD_WEBHOOKS_URL: '',
 };
 
