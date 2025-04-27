@@ -196,7 +196,7 @@ const processLogLine = async (line, test = false) => {
 				});
 		});
 
-	await require('./scripts/services/updates.js')();
+	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') await require('./scripts/services/updates.js')();
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
 	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\`.`, 0x59D267);
