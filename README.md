@@ -14,7 +14,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 1. [Node.js + npm](https://github.com/sefinek/UFW-AbuseIPDB-Reporter?tab=readme-ov-file#nodejs-installation)
 2. [PM2](https://www.npmjs.com/package/pm2) (`npm i pm2 -g`)
 3. [Git](https://github.com/sefinek/UFW-AbuseIPDB-Reporter?tab=readme-ov-file#git-installation)
-4. Linux
+4. Linux (Ubuntu or Debian)
 
 
 ## ✅ Features
