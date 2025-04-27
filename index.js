@@ -187,13 +187,11 @@ const processLogLine = async (line, test = false) => {
 				log('The file has been truncated, and the offset has been reset');
 			}
 
-			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' })
-				.on('data', chunk => {
-					chunk.split('\n').filter(line => line.trim()).forEach(processLogLine);
-				})
-				.on('end', () => {
-					fileOffset = stats.size;
-				});
+			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' }).on('data', chunk => {
+				chunk.split('\n').filter(line => line.trim()).forEach(processLogLine);
+			}).on('end', () => {
+				fileOffset = stats.size;
+			});
 		});
 
 	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') await require('./scripts/services/updates.js')();
