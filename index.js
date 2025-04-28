@@ -8,7 +8,7 @@ const axios = require('./scripts/services/axios.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
-const { version, repoName, repoURL } = require('./scripts/utils/repo.js');
+const { version, name, repoFullUrl } = require('./scripts/utils/repo.js');
 const sendWebhook = require('./scripts/services/discordWebhooks.js');
 const isLocalIP = require('./scripts/utils/isLocalIP.js');
 const log = require('./scripts/utils/log.js');
@@ -141,7 +141,7 @@ const processLogLine = async (line, test = false) => {
 };
 
 (async () => {
-	log(`Version ${version} - ${repoURL}`);
+	log(`Version ${version} - ${repoFullUrl}`);
 
 	loadReportedIPs();
 	loadBufferFromFile();
@@ -188,7 +188,7 @@ const processLogLine = async (line, test = false) => {
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
 	// Ready
-	if (SERVER_ID !== 'development') await sendWebhook(`[${repoName}](${repoURL}) has been successfully started on the device \`${SERVER_ID}\`.`, 0x59D267);
+	await sendWebhook(`[${name}](${repoFullUrl}) has been successfully started on the device \`${SERVER_ID}\`.`, 0x59D267);
 	log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
 	process.send && process.send('ready');
 })();
