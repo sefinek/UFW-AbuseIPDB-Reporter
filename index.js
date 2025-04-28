@@ -8,7 +8,7 @@ const axios = require('./scripts/services/axios.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
-const { version, name, repoFullUrl } = require('./scripts/utils/repo.js');
+const { name, version, authorEmailWebsite, repoFullUrl } = require('./scripts/utils/repo.js');
 const sendWebhook = require('./scripts/services/discordWebhooks.js');
 const isLocalIP = require('./scripts/utils/isLocalIP.js');
 const log = require('./scripts/utils/log.js');
@@ -141,7 +141,7 @@ const processLogLine = async (line, test = false) => {
 };
 
 (async () => {
-	log(`Version ${version} - ${repoFullUrl}`);
+	log(`${repoFullUrl} - v${version} | Author: ${authorEmailWebsite}`);
 
 	loadReportedIPs();
 	loadBufferFromFile();
