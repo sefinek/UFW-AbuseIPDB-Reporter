@@ -99,8 +99,8 @@ const processLogLine = async (line, test = false) => {
 
 	const data = {
 		timestamp: parseTimestamp(line),
-		srcIp: line.match(/SRC=([\d.]+)/)?.[1] || null,
-		dstIp: line.match(/DST=([\d.]+)/)?.[1] || null,
+		srcIp: line.match(/SRC=(\S+)/)?.[1] || null,
+		dstIp: line.match(/DST=(\S+)/)?.[1] || null,
 		proto: line.match(/PROTO=(\S+)/)?.[1] || null,
 		spt: parseNumber(line, /SPT=(\d+)/),
 		dpt: parseNumber(line, /DPT=(\d+)/),
