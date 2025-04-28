@@ -27,7 +27,8 @@
     "csv-stringify": "^6.5.2",
     "form-data": "^4.0.2",
     "ipaddr.js": "^2.2.0",
-    "simple-git": "^3.27.0"
+    "simple-git": "^3.27.0",
+    "ufw-log-parser": "^0.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",

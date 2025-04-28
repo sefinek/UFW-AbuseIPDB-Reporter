@@ -3,6 +3,7 @@
 
 const fs = require('node:fs');
 const chokidar = require('chokidar');
+const { parseUfwLog } = require('ufw-log-parser');
 const axios = require('./scripts/services/axios.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
@@ -10,7 +11,6 @@ const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher
 const { version, repoName, repoURL } = require('./scripts/utils/repo.js');
 const sendWebhook = require('./scripts/services/discordWebhooks.js');
 const isLocalIP = require('./scripts/utils/isLocalIP.js');
-const { parseNumber, parseTimestamp } = require('./scripts/utils/parse.js');
 const log = require('./scripts/utils/log.js');
 const config = require('./config.js');
 const { UFW_LOG_FILE, ABUSEIPDB_API_KEY, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOKS_ENABLED, DISCORD_WEBHOOKS_URL } = config.MAIN;
@@ -97,28 +97,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', id, timestamp }, ca
 const processLogLine = async (line, test = false) => {
 	if (!line.includes('[UFW BLOCK]')) return log(`Ignoring invalid line: ${line}`, 2);
 
-	const data = {
-		timestamp: parseTimestamp(line),
-		srcIp: line.match(/SRC=(\S+)/)?.[1] || null,
-		dstIp: line.match(/DST=(\S+)/)?.[1] || null,
-		proto: line.match(/PROTO=(\S+)/)?.[1] || null,
-		spt: parseNumber(line, /SPT=(\d+)/),
-		dpt: parseNumber(line, /DPT=(\d+)/),
-		in: line.match(/IN=(\w+)/)?.[1] || null,
-		out: line.match(/OUT=(\w+)/)?.[1] || null,
-		mac: line.match(/MAC=([\w:]+)/)?.[1] || null,
-		len: parseNumber(line, /LEN=(\d+)/),
-		ttl: parseNumber(line, /TTL=(\d+)/),
-		id: parseNumber(line, /ID=(\d+)/),
-		tos: line.match(/TOS=(\S+)/)?.[1] || null,
-		prec: line.match(/PREC=(\S+)/)?.[1] || null,
-		res: line.match(/RES=(\S+)/)?.[1] || null,
-		window: parseNumber(line, /WINDOW=(\d+)/),
-		urgp: parseNumber(line, /URGP=(\d+)/),
-		ack: !!line.includes('ACK'),
-		syn: !!line.includes('SYN'),
-	};
-
+	const data = parseUfwLog(line);
 	const { srcIp, proto, dpt } = data;
 	if (!srcIp) return log(`Missing SRC in the log line: ${line}`, 3);
 
