@@ -102,7 +102,7 @@ const processLogLine = async (line, test = false) => {
 	if (!srcIp) return log(`Missing SRC in the log line: ${line}`, 3);
 
 	const ips = getServerIPs();
-	if (!Array.isArray(ips)) return log('For some reason, `ips` from `getServerIPs()` is not an array', 3, true);
+	if (!Array.isArray(ips)) return log(`For some reason, 'ips' from 'getServerIPs()' is not an array. Received: ${ips}`, 3, true);
 
 	if (ips.includes(srcIp)) return log(`Ignoring own IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 2, true);
 	if (isLocalIP(srcIp)) return log(`Ignoring local IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 2, true);
