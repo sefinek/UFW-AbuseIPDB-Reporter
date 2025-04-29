@@ -5,10 +5,9 @@ export default [
 	js.configs.recommended,
 	{
 		languageOptions: {
-			ecmaVersion: 2025,
+			ecmaVersion: 'latest',
 			globals: {
 				...globals.node,
-				...globals.es2025,
 			},
 		},
 		rules: {
