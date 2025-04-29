@@ -1,6 +1,6 @@
 # 🛡️ UFW AbuseIPDB Reporter
-A utility designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
-To prevent excessive reporting of the same IP address within a short period, the tool uses a temporary cache file to track previously reported IP addresses.
+An integration tool designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
+To prevent excessive reporting of the same IP address within a short time period, the tool uses a temporary cache file to track previously reported IP addresses.
 
 ⭐ If you like this repository or find it useful, I'd greatly appreciate it if you could give it a star. Many thanks!  
 Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/sefinek/Cloudflare-WAF-To-AbuseIPDB)
