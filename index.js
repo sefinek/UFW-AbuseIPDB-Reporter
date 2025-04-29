@@ -49,15 +49,12 @@ const checkRateLimit = async () => {
 const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', id, timestamp }, categories, comment) => {
 	if (!srcIp) return log('Missing source IP (srcIp)', 3);
 
-	if (getServerIPs().includes(srcIp)) return;
-	if (isIPReportedRecently(srcIp)) return;
-
 	await checkRateLimit();
 
 	if (ABUSE_STATE.isBuffering) {
 		if (BULK_REPORT_BUFFER.has(srcIp)) return;
 		BULK_REPORT_BUFFER.set(srcIp, { categories, timestamp, comment });
-		saveBufferToFile();
+		await saveBufferToFile();
 		log(`Queued ${srcIp} for bulk report (collected ${BULK_REPORT_BUFFER.size} IPs)`, 1);
 		return;
 	}
@@ -80,14 +77,17 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', id, timestamp }, ca
 				ABUSE_STATE.sentBulk = false;
 				LAST_RATELIMIT_LOG = Date.now();
 				RATELIMIT_RESET = nextRateLimitReset();
-				log(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toISOString()}`);
+				log(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toISOString()}`, 0, true);
 			}
 
-			if (!BULK_REPORT_BUFFER.has(srcIp)) {
-				BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
-				saveBufferToFile();
-				log(`Queued ${srcIp} for bulk report due to rate limit`, 1);
+			if (BULK_REPORT_BUFFER.has(srcIp)) {
+				log(`${srcIp} is already in buffer, skipping`);
+				return;
 			}
+
+			BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
+			await saveBufferToFile();
+			log(`Queued ${srcIp} for bulk report due to rate limit`);
 		} else {
 			log(`Failed to report ${srcIp} [${dpt}/${proto}]; ${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`, status === 429 ? 0 : 3);
 		}
@@ -136,15 +136,15 @@ const processLogLine = async (line, test = false) => {
 
 	if (await reportIp(data, categories, comment)) {
 		markIPAsReported(srcIp);
-		saveReportedIPs();
+		await saveReportedIPs();
 	}
 };
 
 (async () => {
 	log(`${repoFullUrl} - v${version} | Author: ${authorEmailWebsite}`);
 
-	loadReportedIPs();
-	loadBufferFromFile();
+	await loadReportedIPs();
+	await loadBufferFromFile();
 
 	if (BULK_REPORT_BUFFER.size > 0 && !ABUSE_STATE.isLimited) {
 		log(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
