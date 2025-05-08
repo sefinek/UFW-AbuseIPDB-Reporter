@@ -145,9 +145,9 @@ const processLogLine = async (line, test = false) => {
 
 	// Auto updates
 	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') {
-		await require('./scripts/services/updates.js')();
+		await require('./scripts/services/updates.js');
 	} else {
-		await require('./scripts/services/version.js')();
+		await require('./scripts/services/version.js');
 	}
 
 	// Bulk
