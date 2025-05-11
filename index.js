@@ -191,7 +191,7 @@ const processLogLine = async (line, test = false) => {
 	if (DISCORD_WEBHOOKS_ENABLED && DISCORD_WEBHOOKS_URL) await require('./scripts/services/summaries.js')();
 
 	// Ready
-	await sendWebhook(`[${name}](${repoFullUrl}) has been successfully started on the device \`${SERVER_ID}\`.`, 0x59D267);
+	await sendWebhook(`[${name}](${repoFullUrl}) was successfully started!`, 0x59D267);
 	log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
 	process.send?.('ready');
 })();
