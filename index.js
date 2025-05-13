@@ -148,6 +148,9 @@ const processLogLine = async (line, test = false) => {
 		await require('./scripts/services/version.js');
 	}
 
+	// Fetch IPs
+	await refreshServerIPs();
+
 	// Load cache
 	await loadReportedIPs();
 
@@ -157,11 +160,6 @@ const processLogLine = async (line, test = false) => {
 		logger.log(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
 		await sendBulkReport();
 	}
-
-	// Fetch IPs
-	logger.log('Trying to fetch your IPv4 and IPv6 address from api.sefinek.net...');
-	await refreshServerIPs();
-	logger.log(`Fetched ${getServerIPs()?.length} of your IP addresses. If any of them accidentally appear in the UFW logs, they will be ignored.`, 1);
 
 	// Check UFW_LOG_FILE
 	if (!fs.existsSync(UFW_LOG_FILE)) {

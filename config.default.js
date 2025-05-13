@@ -15,7 +15,7 @@ exports.MAIN = {
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set values like 1 hour, as it wouldn't make sense due to rate limits.
 
 	/* --------------------------- Automatic Updates --------------------------- */
-	AUTO_UPDATE_ENABLED: true, // Automatic updates: true to enable auto-update via 'git pull', false to disable.
+	AUTO_UPDATE_ENABLED: false, // Automatic updates: true to enable auto-update via 'git pull', false to disable.
 	AUTO_UPDATE_SCHEDULE: '15,17,18,20 * * *', // Cron schedule for automatic script updates. Default: every day at 15:00, 17:00, 18:00, 20:00
 
 	/* --------------------------- Discord Webhooks --------------------------- */
@@ -44,24 +44,21 @@ https://github.com/sefinek/UFW-AbuseIPDB-Reporter`; // Please don't delete this 
 
 // See: https://www.abuseipdb.com/categories
 const categories = {
-	TCP: {
-		22: '14,22,18', // Port Scan | SSH | Brute-Force
-		80: '14,21', // Port Scan | Web App Attack
-		443: '14,21', // Port Scan | Web App Attack
-		8080: '14,21', // Port Scan | Web App Attack
-		25: '14,11', // Port Scan | Email Spam
-		21: '14,5,18', // Port Scan | FTP Brute-Force | Brute-Force
-		53: '14,1,2', // Port Scan | DNS Compromise | DNS Poisoning
-		23: '14,15,18', // Port Scan | Hacking | Brute-Force
-		3389: '14,15,18', // Port Scan | Hacking | Brute-Force
-		3306: '14,16', // Port Scan | SQL Injection
-		6666: '14,8', // Port Scan | Fraud VoIP
-		6667: '14,8', // Port Scan | Fraud VoIP
-		6668: '14,8', // Port Scan | Fraud VoIP
-		6669: '14,8', // Port Scan | Fraud VoIP
-		9999: '14,6', // Port Scan | Ping of Death
-	},
-	UDP: {},
+	22: '14,22,18', // Port Scan | SSH | Brute-Force
+	80: '14,21', // Port Scan | Web App Attack
+	443: '14,21', // Port Scan | Web App Attack
+	8080: '14,21', // Port Scan | Web App Attack
+	25: '14,11', // Port Scan | Email Spam
+	21: '14,5,18', // Port Scan | FTP Brute-Force | Brute-Force
+	53: '14,1,2', // Port Scan | DNS Compromise | DNS Poisoning
+	23: '14,15,18', // Port Scan | Hacking | Brute-Force
+	3389: '14,15,18', // Port Scan | Hacking | Brute-Force
+	3306: '14,16', // Port Scan | SQL Injection
+	6666: '14,8', // Port Scan | Fraud VoIP
+	6667: '14,8', // Port Scan | Fraud VoIP
+	6668: '14,8', // Port Scan | Fraud VoIP
+	6669: '14,8', // Port Scan | Fraud VoIP
+	9999: '14,6', // Port Scan | Ping of Death
 };
 
-exports.DETERMINE_CATEGORIES = ({ proto, dpt }) => categories[proto]?.[dpt] || '14'; // Default: Port Scan
+exports.DETERMINE_CATEGORIES = ({ dpt }) => categories[dpt] || '14'; // Default: Port Scan
