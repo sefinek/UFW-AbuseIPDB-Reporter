@@ -1,26 +1,27 @@
 exports.MAIN = {
-	// Server
+	/* --------------------------- Server --------------------------- */
+	SERVER_ID: null, // Server identifier (e.g., 'hp-terminal', 'pl-cluster', 'de1'). Use 'development' for testing only. 'production' has no effect. Use null to leave it unset.
+	EXTENDED_LOGS: false, // Specifies whether the script should display additional information in the logs.
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: '/var/cache/sefinek/ufw-abuseipdb-reporter.cache',
-	SERVER_ID: null, // The server name that will be visible in reports (e.g., homeserver1, de1). Leave as null if you don't want to define it.
-	EXTENDED_LOGS: false, // Specifies whether the script should display additional information in the logs.
 
-	// Network
-	IP_REFRESH_SCHEDULE: '0 */6 * * *', // CRON: How often the script should check the IP address assigned by the ISP to prevent accidental self-reporting. If you have a static IP, you can set it to '0 0 1 * *' (once a month). Default: every 6 hours
-	IPv6_SUPPORT: true, // Specifies whether the device has an assigned IPv6 address.
+	/* --------------------------- Network --------------------------- */
+	IP_ASSIGNMENT: 'dynamic', // IP assignment type: 'static' for a fixed IP, 'dynamic' if it may change over time.
+	IP_REFRESH_SCHEDULE: '0 */6 * * *', // CRON schedule for checking the public IP assigned by your ISP. Used only with dynamic IPs to prevent accidental self-reporting. If IP_ASSIGNMENT is set to 'static', the script will check your IP only once.
+	IPv6_SUPPORT: true, // IPv6 support: true if the device has a globally routable address assigned by the ISP.
 
-	// Reporting
-	ABUSEIPDB_API_KEY: '', // Secret API key for AbuseIPDB.
-	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time (12 hours in this example) that must pass before the same IP address can be reported again. Do not set values like 1 hour, as it wouldn't make sense due to rate limits.
+	/* --------------------------- Reports --------------------------- */
+	ABUSEIPDB_API_KEY: '', // https://www.abuseipdb.com/account/api
+	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set values like 1 hour, as it wouldn't make sense due to rate limits.
 
-	// Automatic Updates
-	AUTO_UPDATE_ENABLED: false, // Should the script automatically update to the latest version using 'git pull'? If enabled, monitor the script periodically — incompatibilities may occasionally occur with the config file.
-	AUTO_UPDATE_SCHEDULE: '0 18 * * *', // CRON: Schedule for automatic script updates. Default: every day at 18:00
+	/* --------------------------- Automatic Updates --------------------------- */
+	AUTO_UPDATE_ENABLED: true, // Automatic updates: true to enable auto-update via 'git pull', false to disable.
+	AUTO_UPDATE_SCHEDULE: '15,17,18,20 * * *', // CRON schedule for automatic script updates. Default: every day at 15:00, 17:00, 18:00, 20:00
 
-	// Discord Webhooks
-	DISCORD_WEBHOOKS_ENABLED: false, // Should the script send webhooks? These will include error reports, daily summaries, and other related information.
-	DISCORD_WEBHOOKS_URL: '',
-	DISCORD_WEBHOOK_USERNAME: 'SERVER_ID', // The name displayed as the message author on Discord. If you don't want to set it, leave the value as null. Providing SERVER_ID as a string will display this.MAIN.SERVER_ID.
+	/* --------------------------- Discord Webhooks --------------------------- */
+	DISCORD_WEBHOOK_ENABLED: false, // Enables sending Discord webhooks with error reports, execution status, and other events.
+	DISCORD_WEBHOOK_URL: '',
+	DISCORD_WEBHOOK_USERNAME: 'SERVER_ID', // Username shown as the message author. Use null for default. 'SERVER_ID' will resolve to this.MAIN.SERVER_ID.
 };
 
 

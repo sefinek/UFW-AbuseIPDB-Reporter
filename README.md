@@ -11,14 +11,14 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 
 ## 📋 Requirements
-1. [Node.js + npm](https://github.com/sefinek/UFW-AbuseIPDB-Reporter?tab=readme-ov-file#nodejs-installation)
-2. [PM2](https://www.npmjs.com/package/pm2) (`npm i pm2 -g`)
-3. [Git](https://github.com/sefinek/UFW-AbuseIPDB-Reporter?tab=readme-ov-file#git-installation)
-4. Linux (Ubuntu or Debian)
+- [Node.js + npm](https://gist.github.com/sefinek/fb50041a5f456321d58104bbf3f6e649)
+- [PM2](https://www.npmjs.com/package/pm2) (`npm i -g pm2`)
+- [Git](https://gist.github.com/sefinek/1de50073ffbbae82fc901506304f0ada)
+- Linux (Ubuntu or Debian)
 
 
 ## ✅ Features
-1. **Easy Configuration** – The [`config.js`](config.default.js) file allows for quick and simple customization.
+1. **Easy Configuration** – The [`config.js`](config.default.js) file allows for quick and simple configuration.
 2. **Simple Installer** – Enables fast and seamless integration deployment.
 3. **Bulk Reporting Support** – If the script encounters a rate limit, it will start buffering collected IPs and send a bulk report.
 4. **Self-IP Protection (IPv4 & IPv6)** – The script will never report IP addresses belonging to you or your server, even if you're using a dynamic IP address.
@@ -27,7 +27,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
    - Critical notifications
    - Script error alerts
    - Daily summaries of reported IPs
-7. **Automatic Updates** – The script regularly fetches and applies the latest updates. You can [disable this](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/blob/main/config.default.js#L14) if you prefer.
+7. **Automatic Updates** – The script regularly fetches and applies the latest updates. You can disable this feature if you'd prefer.
 
 
 ## 📥 Installation (Ubuntu & Debian)
