@@ -32,7 +32,7 @@ Also, check this out: [sefinek/Cloudflare-WAF-To-AbuseIPDB](https://github.com/s
 
 ## 📥 Installation (Ubuntu & Debian)
 
-### Automatic (easy & fast & recommenced)
+### Automatic (easy & fast & recommended)
 #### Via curl
 ```bash
 bash <(curl -fsS https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporter/main/install.sh)
