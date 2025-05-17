@@ -32,7 +32,7 @@
     "ufw-log-parser": "^0.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.27.0",
     "globals": "^16.1.0"
   }
 }
