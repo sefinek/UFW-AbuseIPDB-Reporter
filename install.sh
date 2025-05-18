@@ -18,7 +18,7 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 13.04.2025 <<
+                 >> Made by sefinek.net || Last update: 18.05.2025 <<
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -241,8 +241,6 @@ fi
 echo "📂 Creating directories and setting permissions..."
 sudo mkdir -p /var/log/ufw-abuseipdb
 sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
-sudo mkdir -p /var/cache/sefinek
-sudo chown -R "$USER":"$USER" /var/cache/sefinek
 
 # Change permissions for UFW log file
 echo "🔒 Changing permissions for $ufw_log_path..."
