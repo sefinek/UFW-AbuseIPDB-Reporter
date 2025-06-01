@@ -67,8 +67,8 @@ npm install
 cp config.default.js config.js
 sudo chmod 644 /var/log/ufw.log
 npm install -g pm2
-sudo mkdir -p /var/log/ufw-abuseipdb /var/cache/sefinek
-sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb /var/cache/sefinek
+sudo mkdir -p /var/log/ufw-abuseipdb
+sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
 pm2 start .
 eval "$(pm2 startup | grep sudo)"
 pm2 save
