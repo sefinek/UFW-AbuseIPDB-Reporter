@@ -1,6 +1,6 @@
 {
   "name": "ufw-abuseipdb-reporter",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "homepage": "https://github.com/sefinek/UFW-AbuseIPDB-Reporter#readme",
   "bugs": {
     "url": "https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues"
