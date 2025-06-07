@@ -26,10 +26,10 @@
     "cron": "^4.3.1",
     "csv-parse": "^5.6.0",
     "csv-stringify": "^6.5.2",
-    "form-data": "^4.0.2",
+    "form-data": "^4.0.3",
     "ipaddr.js": "^2.2.0",
     "semver": "^7.7.2",
-    "simple-git": "^3.27.0",
+    "simple-git": "^3.28.0",
     "ufw-log-parser": "^0.1.0"
   },
   "devDependencies": {
