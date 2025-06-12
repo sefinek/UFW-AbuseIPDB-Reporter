@@ -140,7 +140,7 @@ const processLogLine = async (line, test = false) => {
 };
 
 (async () => {
-	banner(`UFW To AbuseIPDB (v${version})`);
+	banner();
 
 	// Auto updates
 	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') {
