@@ -20,7 +20,7 @@
     "update": "git pull --recurse-submodules && npm install --omit=dev && pm2 restart ufw-abuseipdb"
   },
   "dependencies": {
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "axios-retry": "^4.5.0",
     "chokidar": "^4.0.3",
     "cron": "^4.3.1",
@@ -33,7 +33,7 @@
     "ufw-log-parser": "^0.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.28.0",
-    "globals": "^16.2.0"
+    "@eslint/js": "^9.30.1",
+    "globals": "^16.3.0"
   }
 }
