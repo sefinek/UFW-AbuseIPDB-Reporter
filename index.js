@@ -66,7 +66,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 			comment,
 		});
 
-		logger.log(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.threat_score}%;}`, 1);
+		logger.log(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.threat_score}%`, 1);
 		return true;
 	} catch (err) {
 		const status = err.response?.status ?? 'unknown';
