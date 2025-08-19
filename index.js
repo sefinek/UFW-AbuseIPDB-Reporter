@@ -46,7 +46,7 @@ const checkRateLimit = async () => {
 	}
 };
 
-const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp, timestampRaw }, categories, comment) => {
+const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, categories, comment) => {
 	if (!srcIp) return logger.log('Missing source IP (srcIp)', 3);
 
 	await checkRateLimit();
@@ -64,10 +64,9 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp, timestam
 			ip: srcIp,
 			categories,
 			comment,
-			timestamp,
 		});
 
-		logger.log(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.threat_score}%; Raw timestamp: ${timestampRaw}; Parsed: ${timestamp}`, 1);
+		logger.log(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.threat_score}%;}`, 1);
 		return true;
 	} catch (err) {
 		const status = err.response?.status ?? 'unknown';
