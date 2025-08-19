@@ -30,7 +30,7 @@
     "ipaddr.js": "^2.2.0",
     "semver": "^7.7.2",
     "simple-git": "^3.28.0",
-    "ufw-log-parser": "^0.1.1"
+    "ufw-log-parser": "github:sefinek/ufw-log-parser"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
