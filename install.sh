@@ -50,7 +50,7 @@ check_dependencies() {
         local dep=$1
         case $dep in
             node)
-                curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+                curl -fsSL https://deb.nodesource.com/setup_24.x -o nodesource_setup.sh
                 sudo bash nodesource_setup.sh
                 sudo apt-get install -y nodejs
                 rm -f nodesource_setup.sh
