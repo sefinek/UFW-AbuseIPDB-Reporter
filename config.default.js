@@ -22,6 +22,7 @@ exports.MAIN = {
 	DISCORD_WEBHOOK_ENABLED: false, // Enables sending Discord webhooks with error reports, execution status, and other events.
 	DISCORD_WEBHOOK_URL: '',
 	DISCORD_WEBHOOK_USERNAME: 'SERVER_ID', // Username shown as the message author. Use null for default. 'SERVER_ID' will resolve to this.MAIN.SERVER_ID.
+	DISCORD_USER_ID: '', // Your Discord account identifier.
 };
 
 
