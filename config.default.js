@@ -15,8 +15,8 @@ exports.MAIN = {
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set values like 1 hour, as it wouldn't make sense due to rate limits.
 
 	/* --------------------------- Automatic Updates --------------------------- */
-	AUTO_UPDATE_ENABLED: false, // Set the value to true to enable automatic updates via 'git pull', false to disable
-	AUTO_UPDATE_SCHEDULE: '0 15,17,18,20 * * *', // Cron schedule for automatic script updates. Default: every day at 15:00, 17:00, 18:00, 20:00
+	AUTO_UPDATE_ENABLED: false, // Set to true to enable automatic updates via "git pull", false to disable. This option is discouraged due to potential future incompatibilities. Enable it only if you actively monitor the server and want the latest version.
+	AUTO_UPDATE_SCHEDULE: '0 14,16,20 * * *', // Cron schedule for automatic updates. Default: every day at 14:00, 16:00, 20:00
 
 	/* --------------------------- Discord Webhooks --------------------------- */
 	DISCORD_WEBHOOK_ENABLED: false, // Enables sending Discord webhooks with error reports, execution status, and other events.
