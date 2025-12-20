@@ -1,0 +1,79 @@
+SniffCat:
+1 - DNS Compromise: Altering DNS records resulting in improper redirection to malicious IPs.
+2 - DNS Poisoning: Falsifying domain server cache (cache poisoning) with fake DNS responses.
+3 - DDoS Attack: Participating in distributed denial-of-service attack causing service unavailability.
+4 - Port Scan: Scanning TCP/UDP ports to discover open services or vulnerabilities.
+5 - Mass Scanner: Automated scanning of multiple hosts or entire network subnets.
+6 - Exploited Host: Host compromised and controlled by attacker, actively used for malicious activities.
+7 - Malware Hosting: Server distributing malicious software, scripts, or infected files.
+8 - C&C Beaconing: Communication with malware command-and-control (C2) infrastructure.
+9 - Cryptojacking: Unauthorized use of victim's system resources for cryptocurrency mining.
+10 - Phishing: Impersonating legitimate websites to steal credentials or personal data.
+11 - Hacking: General hacking attempts to gain unauthorized access or escalate privileges.
+12 - SQL Injection: Injecting malicious SQL queries through user input fields.
+13 - Command Injection: Executing arbitrary system commands through vulnerable application backend.
+14 - Spam Activity: Automated generation of spam (forms, comments, messages, emails).
+15 - Bad Web Bot: Malicious bot ignoring robots.txt or impersonating legitimate user-agents.
+16 - Path Traversal: Accessing system files outside application directory using ../ techniques.
+17 - Brute-Force: Mass login attempts using automated credential guessing.
+18 - SSH/SFTP: Unauthorized login attempts to SSH or SFTP services.
+19 - FTP: Unauthorized login attempts to FTP server.
+20 - Email (SMTP/IMAP/POP3): Unauthorized access attempts to email services.
+21 - HTTP/HTTPS: Suspicious HTTP/S requests with malicious headers or payloads.
+22 - RDP: Unauthorized login attempts to Remote Desktop Protocol.
+23 - Telnet: Unauthorized access to Telnet service, commonly on IoT devices.
+24 - SMB: Unauthorized login attempts to SMB/CIFS file shares.
+25 - MongoDB: Unauthorized access attempts to MongoDB database instances.
+26 - Redis: Unauthorized login attempts to open Redis instances.
+27 - Other Abuse: Security-violating activity not covered by other categories.
+
+AbuseIPDB:
+1	DNS Compromise	Altering DNS records resulting in improper redirection.
+2	DNS Poisoning	Falsifying domain server cache (cache poisoning).
+3	Fraud Orders	Fraudulent orders.
+4	DDoS Attack	Participating in distributed denial-of-service (usually part of botnet).
+5	FTP Brute-Force
+6	Ping of Death	Oversized IP packet.
+7	Phishing	Phishing websites and/or email.
+8	Fraud VoIP
+9	Open Proxy	Open proxy, open relay, or Tor exit node.
+10	Web Spam	Comment/forum spam, HTTP referer spam, or other CMS spam.
+11	Email Spam	Spam email content, infected attachments, and phishing emails. Note: Limit comments to only relevant information (instead of log dumps) and be sure to remove PII if you want to remain anonymous.
+12	Blog Spam	CMS blog comment spam.
+13	VPN IP	Conjunctive category.
+14	Port Scan	Scanning for open ports and vulnerable services.
+15	Hacking
+16	SQL Injection	Attempts at SQL injection.
+17	Spoofing	Email sender spoofing.
+18	Brute-Force	Credential brute-force attacks on webpage logins and services like SSH, FTP, SIP, SMTP, RDP, etc. This category is separate from DDoS attacks.
+19	Bad Web Bot	Webpage scraping (for email addresses, content, etc) and crawlers that do not honor robots.txt. Excessive requests and user agent spoofing can also be reported here.
+20	Exploited Host	Host is likely infected with malware and being used for other attacks or to host malicious content. The host owner may not be aware of the compromise. This category is often used in combination with other attack categories.
+21	Web App Attack	Attempts to probe for or exploit installed web applications such as a CMS like WordPress/Drupal, e-commerce solutions, forum software, phpMyAdmin and various other software plugins/solutions.
+22	SSH	Secure Shell (SSH) abuse. Use this category in combination with more specific categories.
+23	IoT Targeted	Abuse was targeted at an "Internet of Things" type device. Include information about what type of device was targeted in the comments.
+
+SpamVerify:
+1: DNS Compromise
+2: DNS Poisoning
+3: Fraud Orders
+4: DDoS Attack
+5: Open Proxy
+6: Web Spam
+7: Email Spam
+8: Port Scan
+9: Spoofing
+10: Brute Force
+11: Bad Web Bot
+12: Exploited Host
+13: Web App Attack
+14: SSH
+15: IoT Targeted
+16: FTP Brute Force
+17: Ping of Death
+18: Phishing
+19: Fraud VoIP
+20: Blog Spam
+21: VPN IP
+22: Hacking
+23: SQL Injection
+24: Ignoring robots.txt

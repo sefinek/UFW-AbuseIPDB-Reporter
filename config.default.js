@@ -44,13 +44,28 @@ https://github.com/sefinek/UFW-AbuseIPDB-Reporter`; // Please don't delete this 
 
 
 // See: https://www.abuseipdb.com/categories
-const categories = {
-	21:  '14,5,18', // FTP: Port Scan, FTP Brute-Force, Brute-Force
-	22:  '14,22,18', // SSH: Port Scan, SSH, Brute-Force
-	23:  '14,23,18', // Telnet: Port Scan, IoT Targeted, Brute-Force
-	53:  '14,1,2', // DNS: Port Scan, DNS Compromise, DNS Poisoning
-	80:  '14,21', // HTTP: Port Scan, Web App Attack
-	443: '14,21', // HTTPS: Port Scan, Web App Attack
+const { FLAGS, createFlagCollection } = require('./scripts/flags.js');
+const CATEGORIES = {
+	21: [FLAGS.PORT_SCAN, FLAGS.FTP, FLAGS.BRUTE_FORCE],
+	22: [FLAGS.PORT_SCAN, FLAGS.SSH, FLAGS.BRUTE_FORCE],
+	23: [FLAGS.PORT_SCAN, FLAGS.IOT_TARGETED, FLAGS.BRUTE_FORCE],
+	25: [FLAGS.PORT_SCAN, FLAGS.EMAIL_SPAM],
+	53: [FLAGS.PORT_SCAN, FLAGS.DNS_COMPROMISE, FLAGS.DNS_POISONING],
+	80: [FLAGS.PORT_SCAN, FLAGS.WEB_APP_ATTACK],
+	110: [FLAGS.PORT_SCAN, FLAGS.EMAIL_SPAM],
+	143: [FLAGS.PORT_SCAN, FLAGS.EMAIL_SPAM],
+	443: [FLAGS.PORT_SCAN, FLAGS.WEB_APP_ATTACK],
+	445: [FLAGS.PORT_SCAN, FLAGS.HACKING, FLAGS.BRUTE_FORCE],
+	3306: [FLAGS.PORT_SCAN, FLAGS.SQL_INJECTION],
+	3389: [FLAGS.PORT_SCAN, FLAGS.HACKING, FLAGS.BRUTE_FORCE],
+	5432: [FLAGS.PORT_SCAN, FLAGS.SQL_INJECTION],
+	6379: [FLAGS.PORT_SCAN, FLAGS.HACKING],
+	8080: [FLAGS.PORT_SCAN, FLAGS.WEB_APP_ATTACK],
+	27017: [FLAGS.PORT_SCAN, FLAGS.HACKING],
 };
 
-exports.DETERMINE_CATEGORIES = ({ dpt }) => categories[dpt] || '14'; // Default: Port Scan
+exports.DETERMINE_CATEGORIES = ({ dpt }) => {
+	const set = createFlagCollection();
+	set.add(...(CATEGORIES[dpt] || [FLAGS.PORT_SCAN]));
+	return set.toString();
+};
