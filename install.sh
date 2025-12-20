@@ -256,7 +256,7 @@ fi
 
 if [ ! -d "ufw-abuseipdb-reporter" ]; then
     echo "📥 Cloning the repository..."
-    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb-reporter --recurse-submodules || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
+    sudo git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb-reporter || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
     echo "✅ The repository already exists"
 fi
@@ -269,7 +269,7 @@ git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; 
 
 # Install npm dependencies
 echo "📦 Installing npm dependencies..."
-npm install -silent
+npm install --omit=dev -silent
 
 # Copy configuration file
 if [ -e config.js ]; then
@@ -502,7 +502,6 @@ echo -e "   After editing the configuration file, restart the process: pm2 resta
 
 echo -e "\n====================================== Summary ======================================"
 echo "🖥️ Server ID          : ${server_id//\'/}"
-# Mask API token - show first 8 and last 4 chars
 if [[ ${#api_token} -gt 16 ]]; then
     echo "🔑 API Key            : ${api_token:0:8}...${api_token: -4}"
 else
