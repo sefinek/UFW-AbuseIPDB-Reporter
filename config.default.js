@@ -3,7 +3,7 @@ exports.MAIN = {
 	SERVER_ID: null, // Server identifier (e.g., 'hp-terminal', 'pl-cluster', 'de1'). Use 'development' for testing only. 'production' has no effect. Use null to leave it unset.
 	EXTENDED_LOGS: false, // Specifies whether the script should display additional information in the logs.
 	UFW_LOG_FILE: '/var/log/ufw.log',
-	CACHE_FILE: './tmp/reported-ips.cache',
+	CACHE_FILE: './tmp/ufw-abuseipdb-reporter.cache',
 
 	/* --------------------------- Network --------------------------- */
 	IP_ASSIGNMENT: 'dynamic', // IP assignment type: 'static' for a fixed IP, 'dynamic' if it may change over time.
