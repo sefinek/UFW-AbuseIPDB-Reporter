@@ -18,7 +18,10 @@ cat << "EOF"
                    |_|_| |_|\__\___|\__, |_|  \__,_|\__|_|\___/|_| |_|
                                     |___/
 
-                 >> Made by sefinek.net || Last update: 18.05.2025 <<
+📩 Author        : Sefinek <contact@sefinek.net> (https://sefinek.net)
+🔵 Discord       : https://discord.gg/RVH8UXgmzs
+😺 GitHub Issues : https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues
+📦 Last update   : 20.12.2025
 
 This installer will configure UFW-AbuseIPDB-Reporter, a tool that analyzes UFW logs and
 reports to AbuseIPDB the IP addresses that have violated firewall rules. Join my Discord
@@ -75,7 +78,7 @@ check_dependencies() {
             if "$dependency" --version &> /dev/null; then
                 "$dependency" --version | head -n 1
             else
-                echo "ℹ️ Version information for $dependency is unavailable"
+                echo "      Version information for $dependency is unavailable"
             fi
         fi
     done
@@ -98,6 +101,82 @@ check_dependencies() {
 # Check dependencies before proceeding
 check_dependencies curl node git
 
+# Function to extract value from config.js
+extract_config_value() {
+    local key=$1
+    local config_file="${2:-config.js}"
+
+    if [[ ! -f $config_file ]]; then
+        echo ""
+        return
+    fi
+
+    local value
+    value=$(grep -oP "^\s*${key}:\s*\K.*?(?=,\s*(//|$))" "$config_file" | sed "s/^['\"]//;s/['\"]$//" | sed 's/[[:space:]]*$//')
+    [[ $value == "null" ]] && value=""
+    echo "$value"
+}
+
+# Function to ask for configuration with validation
+ask_config() {
+    local prompt=$1
+    local default=$2
+    local validation_type=${3:-""}
+    local result
+
+    while true; do
+        read -e -i "$default" -r -p "$prompt" result
+        result="${result:-$default}"
+
+        case $validation_type in
+            bool)
+                if [[ $result =~ ^(true|false)$ ]]; then
+                    echo "$result"
+                    return 0
+                else
+                    echo "❌ Must be 'true' or 'false'"
+                fi
+                ;;
+            number)
+                if [[ $result =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "$result"
+                    return 0
+                else
+                    echo "❌ Must be a valid number"
+                fi
+                ;;
+            url)
+                if [[ -z $result ]] || [[ $result =~ ^https?:// ]]; then
+                    echo "$result"
+                    return 0
+                else
+                    echo "❌ Must be a valid URL starting with http:// or https://"
+                fi
+                ;;
+            cron)
+                if [[ $result =~ ^[0-9*,/-]+\ [0-9*,/-]+\ [0-9*,/-]+\ [0-9*,/-]+\ [0-9*,/-]+$ ]]; then
+                    echo "$result"
+                    return 0
+                else
+                    echo "❌ Invalid cron format. Expected: 'minute hour day month weekday'"
+                fi
+                ;;
+            static_dynamic)
+                if [[ $result =~ ^(static|dynamic)$ ]]; then
+                    echo "$result"
+                    return 0
+                else
+                    echo "❌ Must be 'static' or 'dynamic'"
+                fi
+                ;;
+            *)
+                echo "$result"
+                return 0
+                ;;
+        esac
+    done
+}
+
 # Function to validate AbuseIPDB API key
 validate_token() {
     local api_key=$1
@@ -114,10 +193,10 @@ validate_token() {
     fi
 
     if [[ $response -eq 200 ]]; then
-        echo "✅ Yay! Token is valid."
+        echo "✅ API token validated successfully."
         return 0
     else
-        echo "❌ Invalid token! Please try again."
+        echo "❌ Invalid token. Please try again."
         return 1
     fi
 }
@@ -147,43 +226,6 @@ else
     echo "✅ UFW logging is already enabled"
 fi
 
-# Check for UFW log file
-if [[ ! -f /var/log/ufw.log ]]; then
-    read -r -p "🔍 /var/log/ufw.log not found. Please enter the path to your log file: " ufw_log_path
-    if [[ -f $ufw_log_path ]]; then
-        echo "✅ Log file found at $ufw_log_path"
-    else
-        echo "❌ Provided log file path does not exist. Exiting..."
-        exit 1
-    fi
-else
-    ufw_log_path="/var/log/ufw.log"
-    echo "✅ /var/log/ufw.log exists"
-fi
-
-# Prompt for API token
-while true; do
-    read -r -p "🔑 Please enter your AbuseIPDB API token: " api_token
-    if validate_token "$api_token"; then
-        break
-    fi
-    continue
-done
-
-# Prompt for server ID
-while true; do
-    read -r -p "🖥️ Enter the server ID (e.g., homeserver1). Leave blank if you do not wish to provide one: " server_id
-    if [[ -z $server_id ]]; then
-        server_id=null
-        break
-    elif [[ $server_id =~ ^[A-Za-z0-9]{1,16}$ ]]; then
-        server_id="'$server_id'"
-        break
-    else
-        echo "❌ It must be 1-16 characters long, contain only letters and numbers, and have no spaces or special characters."
-    fi
-done
-
 # Prompt for system update and upgrade
 if yes_no_prompt "🛠️ Do you want the script to run apt update and apt upgrade for you?"; then
     echo "🔧 Updating and upgrading the system..."
@@ -191,26 +233,38 @@ if yes_no_prompt "🛠️ Do you want the script to run apt update and apt upgra
 fi
 
 # Clone repository & set permissions
-if [ ! -d "/opt" ]; then
-    mkdir -p /opt
-    echo "📂 '/opt' has been created"
-else
-    echo "✅ '/opt' directory already exists"
-fi
-
+echo "📂 Ensuring /opt directory exists..."
+mkdir -p /opt
 cd /opt || { echo "❌ Failed to change directory to '/opt'. Exiting..."; exit 1; }
 
-if [ ! -d "UFW-AbuseIPDB-Reporter" ]; then
-    echo "📥 Cloning the UFW-AbuseIPDB-Reporter repository..."
-    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git --recurse-submodules || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
-else
-    echo "✨ The UFW-AbuseIPDB-Reporter repository already exists"
+# Migrate from old directory name if exists
+if [ -d "UFW-AbuseIPDB-Reporter" ] && [ ! -d "ufw-abuseipdb-reporter" ]; then
+    echo "📦 Migrating from old directory name (UFW-AbuseIPDB-Reporter → ufw-abuseipdb-reporter)..."
+
+    # Stop UFW-AbuseIPDB reporter process if running
+    if command -v pm2 &>/dev/null; then
+        if pm2 list | grep -q "ufw-abuseipdb"; then
+            echo "⏸️ Stopping ufw-abuseipdb process..."
+            pm2 stop ufw-abuseipdb &>/dev/null || true
+            pm2 delete ufw-abuseipdb &>/dev/null || true
+        fi
+    fi
+
+    sudo mv UFW-AbuseIPDB-Reporter ufw-abuseipdb-reporter
+    echo "✅ Migration completed"
 fi
 
-sudo chown "$USER":"$USER" /opt/UFW-AbuseIPDB-Reporter -R
+if [ ! -d "ufw-abuseipdb-reporter" ]; then
+    echo "📥 Cloning the repository..."
+    sudo git clone https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb-reporter --recurse-submodules || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
+else
+    echo "✅ The repository already exists"
+fi
+
+sudo chown "$USER":"$USER" /opt/ufw-abuseipdb-reporter -R
 
 echo "📥 Pulling latest changes..."
-cd UFW-AbuseIPDB-Reporter || { echo "❌ Failed to change directory to 'UFW-AbuseIPDB-Reporter'. Exiting..."; exit 1; }
+cd ufw-abuseipdb-reporter || { echo "❌ Failed to change directory to 'ufw-abuseipdb-reporter'. Exiting..."; exit 1; }
 git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
 
 # Install npm dependencies
@@ -225,17 +279,183 @@ else
   cp config.default.js config.js
 fi
 
-# Update config.js with API token, Server ID, and UFW log path
-config_file="config.js"
-if [[ -f $config_file ]]; then
-    echo "🔧 Updating $PWD/$config_file..."
-    sed -i "s|UFW_LOG_FILE: .*|UFW_LOG_FILE: '$ufw_log_path',|" "$config_file"
-    sed -i "s|SERVER_ID: .*|SERVER_ID: $server_id,|" "$config_file"
-    sed -i "s|ABUSEIPDB_API_KEY: .*|ABUSEIPDB_API_KEY: '$api_token',|" "$config_file"
+# Check for UFW log file
+existing_log_path=$(extract_config_value "UFW_LOG_FILE")
+default_log_path="${existing_log_path:-/var/log/ufw.log}"
+
+if [[ -f $default_log_path ]]; then
+    echo "✅ $default_log_path exists"
+    ufw_log_path="$default_log_path"
 else
-    echo "❌ $config_file not found. Make sure the repository was cloned and initialized correctly."
+    while true; do
+        read -e -i "$default_log_path" -r -p "> 🔍 Please enter the path to your UFW log file: " ufw_log_path
+
+        if [[ -f $ufw_log_path ]]; then
+            echo "✅ Log file found at $ufw_log_path"
+            break
+        else
+            echo "❌ Provided log file path does not exist. Please try again."
+        fi
+    done
+fi
+
+echo -e "\n==============================================================================================\n"
+
+# Prompt for API token
+existing_api_token=$(extract_config_value "ABUSEIPDB_API_KEY")
+
+while true; do
+    read -e -i "$existing_api_token" -r -p "> 🔑 Please enter your AbuseIPDB API token: " api_token
+
+    if [[ -z $api_token ]]; then
+        echo "❌ API token cannot be empty. Please try again."
+        continue
+    fi
+
+    if validate_token "$api_token"; then
+        break
+    fi
+done
+
+# Prompt for server ID
+echo ""
+echo "     Server ID identifies this machine in AbuseIPDB reports and Discord notifications."
+echo "     Examples: 'homeserver1', 'vps-de-01', 'production'. Leave blank if not needed."
+existing_server_id=$(extract_config_value "SERVER_ID")
+
+while true; do
+    read -e -i "$existing_server_id" -r -p "> 🖥️ Enter the server ID (1-16 characters, or leave blank): " server_id
+
+    if [[ -z $server_id ]]; then
+        server_id=null
+        break
+    elif [[ $server_id =~ ^[A-Za-z0-9]{1,16}$ ]]; then
+        server_id="'$server_id'"
+        break
+    else
+        echo "❌ Must be 1-16 characters long, only letters and numbers (a-z, A-Z, 0-9)."
+    fi
+done
+
+# Extended logs
+echo -e "\n     Extended logs show additional debugging information in console output."
+existing_extended_logs=$(extract_config_value "EXTENDED_LOGS")
+extended_logs=$(ask_config "> 📊 Enable extended logs? (true/false): " "${existing_extended_logs:-false}" "bool")
+
+# Cache file path
+echo -e "\n     Cache file stores reported IPs to prevent duplicate reports within cooldown period."
+existing_cache_file=$(extract_config_value "CACHE_FILE")
+cache_file=$(ask_config "> 💾 Cache file path: " "${existing_cache_file:-./tmp/ufw-abuseipdb-reporter.cache}" "")
+
+# IP assignment type
+echo -e "\n     IP assignment: 'dynamic' if your ISP changes your IP periodically, 'static' if it never changes."
+echo "     Most home/small business connections are 'dynamic'. VPS/dedicated servers are usually 'static'."
+existing_ip_assignment=$(extract_config_value "IP_ASSIGNMENT")
+ip_assignment=$(ask_config "> 🌐 IP assignment type (static/dynamic): " "${existing_ip_assignment:-dynamic}" "static_dynamic")
+
+# IP refresh schedule (only if dynamic)
+if [[ $ip_assignment == "dynamic" ]]; then
+    echo -e "\n     How often to check your public IP to prevent reporting yourself (cron format)."
+    echo "     Default '0 */6 * * *' = every 6 hours. Format: minute hour day month weekday"
+    existing_ip_refresh=$(extract_config_value "IP_REFRESH_SCHEDULE")
+    ip_refresh_schedule=$(ask_config "> ⏰ IP refresh schedule (cron): " "${existing_ip_refresh:-0 */6 * * *}" "cron")
+else
+    ip_refresh_schedule="0 */6 * * *"
+fi
+
+# IPv6 support
+echo -e "\n     Enable if your server has a public IPv6 address assigned by your ISP."
+echo "     Check with: ip -6 addr | grep 'scope global'"
+existing_ipv6=$(extract_config_value "IPv6_SUPPORT")
+ipv6_support=$(ask_config "> 🔢 Enable IPv6 support? (true/false): " "${existing_ipv6:-false}" "bool")
+
+# IP report cooldown
+echo -e "\n     Minimum time (in hours) before reporting the same IP again."
+echo "     Recommended: 12 hours. Minimum: 0.25 (15 minutes) due to AbuseIPDB rate limits."
+existing_cooldown=$(extract_config_value "IP_REPORT_COOLDOWN")
+default_cooldown_hours="12"
+if [[ -n $existing_cooldown ]]; then
+    default_cooldown_hours=$(awk "BEGIN {printf \"%.2f\", $existing_cooldown / 3600000}")
+fi
+
+while true; do
+    cooldown_hours=$(ask_config "> ⏱️ IP report cooldown (hours): " "$default_cooldown_hours" "number")
+    # Check if >= 0.25 (15 minutes)
+    if awk "BEGIN {exit !($cooldown_hours >= 0.25)}"; then
+        break
+    else
+        echo "❌ Minimum cooldown is 0.25 hours (15 minutes)"
+    fi
+done
+
+ip_report_cooldown=$(awk "BEGIN {printf \"%.0f\", $cooldown_hours * 3600000}")
+
+# Auto-update
+echo -e "\n     Automatically update script via 'git pull' on schedule. May cause issues with breaking changes."
+existing_auto_update=$(extract_config_value "AUTO_UPDATE_ENABLED")
+auto_update_enabled=$(ask_config "> 🔄 Enable automatic updates? (true/false): " "${existing_auto_update:-false}" "bool")
+
+# Auto-update schedule (only if enabled)
+if [[ $auto_update_enabled == "true" ]]; then
+    echo -e "\n     When to check for updates (cron format)."
+    echo "     Default '0 14,16,20 * * *' = daily at 14:00, 16:00, 20:00"
+    existing_update_schedule=$(extract_config_value "AUTO_UPDATE_SCHEDULE")
+    auto_update_schedule=$(ask_config "> 📅 Auto-update schedule (cron): " "${existing_update_schedule:-0 14,16,20 * * *}" "cron")
+else
+    auto_update_schedule="0 14,16,20 * * *"
+fi
+
+# Discord webhook
+echo -e "\n     Receive Discord notifications about important events, daily summaries of blocked IPs, and errors."
+existing_discord_enabled=$(extract_config_value "DISCORD_WEBHOOK_ENABLED")
+discord_enabled=$(ask_config "> 💬 Enable Discord webhooks? (true/false): " "${existing_discord_enabled:-false}" "bool")
+
+# Discord webhook URL (only if enabled)
+if [[ $discord_enabled == "true" ]]; then
+    echo -e "\n     Edit Channel → Integrations → Create Webhook → Click on created webhook → Copy Webhook URL"
+    discord_url=$(ask_config "> 🔗 Discord webhook URL: " "$(extract_config_value "DISCORD_WEBHOOK_URL")" "url")
+
+    echo -e "\n     Username shown in Discord messages. 'SERVER_ID' will use your server ID value."
+    existing_discord_username=$(extract_config_value "DISCORD_WEBHOOK_USERNAME")
+    discord_username=$(ask_config "> 👤 Discord webhook username: " "${existing_discord_username:-SERVER_ID}" "")
+    [[ -z $discord_username ]] && discord_username="SERVER_ID"
+
+    echo -e "\n     Your Discord user ID for @mentions in critical notifications."
+    echo "     User Settings → Advanced → Developer Mode"
+    echo "     Esc → Right-click on your profile → Copy User ID. Leave blank to skip."
+    discord_user_id=$(ask_config "> 🆔 Discord user ID (optional): " "$(extract_config_value "DISCORD_USER_ID")" "")
+else
+    discord_url=""
+    discord_username="SERVER_ID"
+    discord_user_id=""
+fi
+
+echo -e "\n==============================================================================================\n"
+
+# Update config.js with all parameters
+if [[ ! -f config.js ]]; then
+    echo "❌ config.js not found. Installation may have failed."
     exit 1
 fi
+
+echo "🔧 Updating $PWD/config.js..."
+sed -i \
+    -e "s|UFW_LOG_FILE: .*|UFW_LOG_FILE: '$ufw_log_path',|" \
+    -e "s|SERVER_ID: .*|SERVER_ID: $server_id,|" \
+    -e "s|EXTENDED_LOGS: .*|EXTENDED_LOGS: $extended_logs,|" \
+    -e "s|CACHE_FILE: .*|CACHE_FILE: '$cache_file',|" \
+    -e "s|IP_ASSIGNMENT: .*|IP_ASSIGNMENT: '$ip_assignment',|" \
+    -e "s|IP_REFRESH_SCHEDULE: .*|IP_REFRESH_SCHEDULE: '$ip_refresh_schedule',|" \
+    -e "s|IPv6_SUPPORT: .*|IPv6_SUPPORT: $ipv6_support,|" \
+    -e "s|ABUSEIPDB_API_KEY: .*|ABUSEIPDB_API_KEY: '$api_token',|" \
+    -e "s|IP_REPORT_COOLDOWN: .*|IP_REPORT_COOLDOWN: $ip_report_cooldown,|" \
+    -e "s|AUTO_UPDATE_ENABLED: .*|AUTO_UPDATE_ENABLED: $auto_update_enabled,|" \
+    -e "s|AUTO_UPDATE_SCHEDULE: .*|AUTO_UPDATE_SCHEDULE: '$auto_update_schedule',|" \
+    -e "s|DISCORD_WEBHOOK_ENABLED: .*|DISCORD_WEBHOOK_ENABLED: $discord_enabled,|" \
+    -e "s|DISCORD_WEBHOOK_URL: .*|DISCORD_WEBHOOK_URL: '$discord_url',|" \
+    -e "s|DISCORD_WEBHOOK_USERNAME: .*|DISCORD_WEBHOOK_USERNAME: '$discord_username',|" \
+    -e "s|DISCORD_USER_ID: .*|DISCORD_USER_ID: '$discord_user_id',|" \
+    config.js
 
 # Create directories & set permissions
 echo "📂 Creating directories and setting permissions..."
@@ -243,15 +463,17 @@ sudo mkdir -p /var/log/ufw-abuseipdb
 sudo chown -R "$USER":"$USER" /var/log/ufw-abuseipdb
 
 # Change permissions for UFW log file
-echo "🔒 Changing permissions for $ufw_log_path..."
-sudo chown syslog:"$USER" "$ufw_log_path"
-sudo chmod 640 "$ufw_log_path"
-
+if [[ -f $ufw_log_path ]]; then
+    echo "🔒 Changing permissions for $ufw_log_path..."
+    sudo chown syslog:"$USER" "$ufw_log_path"
+    sudo chmod 640 "$ufw_log_path"
+else
+    echo "⚠️  Warning: UFW log file not found at $ufw_log_path. Permissions not changed."
+fi
 
 # Install PM2
 echo "📦 Installing PM2..."
 sudo npm install pm2@latest -g --silent
-
 
 # Configure PM2
 echo "⚙️ Adding PM2 to autostart..."
@@ -270,7 +492,6 @@ echo "⚙️ Running a script with PM2 and saving the current state of all proce
 pm2 start --silent
 pm2 save --silent
 
-
 # Final
 echo "🌌 Checking PM2 status..."
 pm2 status
@@ -279,11 +500,17 @@ echo -e "\n🎉 Installation and configuration completed! Use the 'pm2 logs' com
 echo -e "⚙️ More settings can be found in the file: $PWD/config.js"
 
 echo -e "\n====================================== Summary ======================================"
-echo "🖥️ Server ID     : ${server_id:-null}"
-echo "🔑 API Key       : $api_token"
-echo "📂 Script        : $PWD"
-
-echo -e "\n====================================== Support ======================================"
-echo "📩 Email         : contact@sefinek.net"
-echo "🔵 Discord       : https://discord.gg/RVH8UXgmzs"
-echo "😺 GitHub Issues : https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues"
+echo "🖥️  Server ID          : ${server_id//\'/}"
+if [[ ${#api_token} -gt 24 ]]; then
+    echo "🔑 API Key            : ${api_token:0:20}...${api_token: -4}"
+else
+    echo "🔑 API Key            : ${api_token:0:8}...${api_token: -4}"
+fi
+echo "📂 UFW Log File       : $ufw_log_path"
+echo "💾 Cache File         : $cache_file"
+echo "🌐 IP Assignment      : $ip_assignment"
+echo "🔢 IPv6 Support       : $ipv6_support"
+echo "⏱️ Report Cooldown    : $cooldown_hours hours"
+echo "🔄 Auto-Updates       : $auto_update_enabled"
+echo "💬 Discord Webhooks   : $discord_enabled"
+echo "📂 Script Directory   : $PWD"
