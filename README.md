@@ -62,7 +62,7 @@ sudo apt update && sudo apt install -y git
 sudo apt update && sudo apt upgrade
 cd ~
 git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb
-cd ufw-abuseIPDB-Reporter
+cd ufw-abuseipdb
 npm install --omit=dev
 cp config.default.js config.js
 sudo chown syslog:"$USER" "$ufw_log_path"
