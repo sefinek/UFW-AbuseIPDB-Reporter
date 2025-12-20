@@ -61,7 +61,7 @@ sudo apt update && sudo apt install -y git
 ```bash
 sudo apt update && sudo apt upgrade
 cd ~
-git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb-reporter
+git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb
 cd ufw-abuseIPDB-Reporter
 npm install --omit=dev
 cp config.default.js config.js

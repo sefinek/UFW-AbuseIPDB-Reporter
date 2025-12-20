@@ -238,8 +238,8 @@ mkdir -p /opt
 cd /opt || { echo "❌ Failed to change directory to '/opt'. Exiting..."; exit 1; }
 
 # Migrate from old directory name if exists
-if [ -d "UFW-AbuseIPDB-Reporter" ] && [ ! -d "ufw-abuseipdb-reporter" ]; then
-    echo "📦 Migrating from old directory name (UFW-AbuseIPDB-Reporter → ufw-abuseipdb-reporter)..."
+if [ -d "UFW-AbuseIPDB-Reporter" ] && [ ! -d "ufw-abuseipdb" ]; then
+    echo "📦 Migrating from old directory name (UFW-AbuseIPDB-Reporter → ufw-abuseipdb)..."
 
     # Stop UFW-AbuseIPDB reporter process if running
     if command -v pm2 &>/dev/null; then
@@ -250,21 +250,21 @@ if [ -d "UFW-AbuseIPDB-Reporter" ] && [ ! -d "ufw-abuseipdb-reporter" ]; then
         fi
     fi
 
-    sudo mv UFW-AbuseIPDB-Reporter ufw-abuseipdb-reporter
+    sudo mv UFW-AbuseIPDB-Reporter ufw-abuseipdb
     echo "✅ Migration completed"
 fi
 
-if [ ! -d "ufw-abuseipdb-reporter" ]; then
+if [ ! -d "ufw-abuseipdb" ]; then
     echo "📥 Cloning the repository..."
-    sudo git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb-reporter || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
+    sudo git clone --recurse-submodules https://github.com/sefinek/UFW-AbuseIPDB-Reporter.git ufw-abuseipdb || { echo "❌ Failed to clone the repository. Exiting..."; exit 1; }
 else
     echo "✅ The repository already exists"
 fi
 
-sudo chown "$USER":"$USER" /opt/ufw-abuseipdb-reporter -R
+sudo chown "$USER":"$USER" /opt/ufw-abuseipdb -R
 
 echo "📥 Pulling latest changes..."
-cd ufw-abuseipdb-reporter || { echo "❌ Failed to change directory to 'ufw-abuseipdb-reporter'. Exiting..."; exit 1; }
+cd ufw-abuseipdb || { echo "❌ Failed to change directory to 'ufw-abuseipdb'. Exiting..."; exit 1; }
 git pull || { echo "❌ Failed to pull the latest changes. Exiting..."; exit 1; }
 
 # Install npm dependencies
