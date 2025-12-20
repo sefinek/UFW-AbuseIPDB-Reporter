@@ -47,7 +47,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporte
 #### Node.js installation
 ```bash
 sudo apt install -y curl && \
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && \
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - && \
 sudo apt install -y nodejs
 ```
 
