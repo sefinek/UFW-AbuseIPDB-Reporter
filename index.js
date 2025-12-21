@@ -37,17 +37,17 @@ const checkRateLimit = async () => {
 			if (!ABUSE_STATE.sentBulk && BULK_REPORT_BUFFER.size > 0) await sendBulkReport();
 			RATELIMIT_RESET = nextRateLimitReset();
 			ABUSE_STATE.sentBulk = false;
-			logger.log(`Rate limit reset. Next reset scheduled at ${RATELIMIT_RESET.toISOString()}`, 1);
+			logger.success(`Rate limit reset. Next reset scheduled at ${RATELIMIT_RESET.toISOString()}`);
 		} else if (now - LAST_RATELIMIT_LOG >= RATE_LIMIT_LOG_INTERVAL) {
 			const minutesLeft = Math.ceil((RATELIMIT_RESET.getTime() - now) / 60000);
-			logger.log(`Rate limit is still active. Collected ${BULK_REPORT_BUFFER.size} IPs. Waiting for reset in ${minutesLeft} minute(s) (${RATELIMIT_RESET.toISOString()})`, 1);
+			logger.success(`Rate limit is still active. Collected ${BULK_REPORT_BUFFER.size} IPs. Waiting for reset in ${minutesLeft} minute(s) (${RATELIMIT_RESET.toISOString()})`);
 			LAST_RATELIMIT_LOG = now;
 		}
 	}
 };
 
 const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, categories, comment) => {
-	if (!srcIp) return logger.log('Missing source IP (srcIp)', 3);
+	if (!srcIp) return logger.error('Missing source IP (srcIp)', { ping: true });
 
 	await checkRateLimit();
 
@@ -55,7 +55,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 		if (BULK_REPORT_BUFFER.has(srcIp)) return;
 		BULK_REPORT_BUFFER.set(srcIp, { categories, timestamp, comment });
 		await saveBufferToFile();
-		logger.log(`Queued ${srcIp} for bulk report (collected ${BULK_REPORT_BUFFER.size} IPs)`, 1);
+		logger.success(`Queued ${srcIp} for bulk report (collected ${BULK_REPORT_BUFFER.size} IPs)`);
 		return;
 	}
 
@@ -66,7 +66,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 			comment,
 		});
 
-		logger.log(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`, 1);
+		logger.success(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
 		const status = err.response?.status ?? 'unknown';
@@ -77,35 +77,48 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 				ABUSE_STATE.sentBulk = false;
 				LAST_RATELIMIT_LOG = Date.now();
 				RATELIMIT_RESET = nextRateLimitReset();
-				logger.log(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toLocaleString()}`, 0, true);
+				logger.info(`Daily AbuseIPDB limit reached. Buffering reports until ${RATELIMIT_RESET.toLocaleString()}`, { discord: true });
 			}
 
 			if (!BULK_REPORT_BUFFER.has(srcIp)) {
 				BULK_REPORT_BUFFER.set(srcIp, { timestamp, categories, comment });
 				await saveBufferToFile();
-				logger.log(`Queued ${srcIp} for bulk report due to rate limit`, 1);
+				logger.success(`Queued ${srcIp} for bulk report due to rate limit`);
 			}
 		} else {
-			logger.log(`Failed to report ${srcIp} [${dpt}/${proto}]; ${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`, status === 429 ? 0 : 3);
+			const failureMsg = `Failed to report ${srcIp} [${dpt}/${proto}]; ${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`;
+			if (status === 429) {
+				logger.info(failureMsg);
+			} else {
+				logger.error(failureMsg);
+			}
 		}
 	}
 };
 
 const processLogLine = async (line, test = false) => {
-	if (!line.includes('[UFW BLOCK]')) return logger.log(`Ignoring invalid line: ${line}`, 2);
+	if (!line.includes('[UFW BLOCK]')) return logger.warn(`Ignoring invalid line: ${line}`);
 
 	const data = parseUfwLog(line);
 	const { srcIp, proto, dpt } = data;
-	if (!srcIp) return logger.log(`Missing SRC in the log line: ${line}`, 3);
+	if (!srcIp) return logger.error(`Missing SRC in the log line: ${line}`, { ping: true });
 
 	// Check IP
 	const ips = getServerIPs();
-	if (!Array.isArray(ips)) return logger.log(`For some reason, 'ips' from 'getServerIPs()' is not an array. Received: ${ips}`, 3, true);
+	if (!Array.isArray(ips)) return logger.error(`For some reason, 'ips' from 'getServerIPs()' is not an array. Received: ${ips}`, { ping: true });
 
-	if (ips.includes(srcIp)) return logger.log(`Ignoring own IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, EXTENDED_LOGS);
-	if (isSpecialPurposeIP(srcIp)) return logger.log(`Ignoring local IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`, 0, EXTENDED_LOGS);
+	if (ips.includes(srcIp)) {
+		if (EXTENDED_LOGS) logger.info(`Ignoring own IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+		return;
+	}
+
+	if (isSpecialPurposeIP(srcIp)) {
+		if (EXTENDED_LOGS) logger.info(`Ignoring local IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+		return;
+	}
+
 	if (proto === 'UDP') {
-		if (EXTENDED_LOGS) logger.log(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+		if (EXTENDED_LOGS) logger.info(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
 		return;
 	}
 
@@ -126,7 +139,7 @@ const processLogLine = async (line, test = false) => {
 			(seconds || (!days && !hours && !minutes)) && `${seconds}s`,
 		].filter(Boolean).join(' ');
 
-		if (EXTENDED_LOGS) logger.log(`${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`);
+		if (EXTENDED_LOGS) logger.info(`${srcIp} was last reported on ${new Date(lastReportedTime * 1000).toLocaleString()} (${timeAgo} ago)`);
 		return;
 	}
 
@@ -158,13 +171,13 @@ const processLogLine = async (line, test = false) => {
 	// Bulk
 	await loadBufferFromFile();
 	if (BULK_REPORT_BUFFER.size > 0 && !ABUSE_STATE.isLimited) {
-		logger.log(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
+		logger.info(`Found ${BULK_REPORT_BUFFER.size} IPs in buffer after restart. Sending bulk report...`);
 		await sendBulkReport();
 	}
 
 	// Check UFW_LOG_FILE
 	if (!fs.existsSync(UFW_LOG_FILE)) {
-		logger.log(`Log file ${UFW_LOG_FILE} does not exist`, 3);
+		logger.error(`Log file ${UFW_LOG_FILE} does not exist`, { ping: true });
 		return;
 	}
 
@@ -175,7 +188,7 @@ const processLogLine = async (line, test = false) => {
 			const stats = fs.statSync(path);
 			if (stats.size < fileOffset) {
 				fileOffset = 0;
-				logger.log('The file has been truncated, and the offset has been reset');
+				logger.info('The file has been truncated, and the offset has been reset');
 			}
 
 			fs.createReadStream(path, { start: fileOffset, encoding: 'utf8' }).on('data', chunk => {
@@ -190,7 +203,7 @@ const processLogLine = async (line, test = false) => {
 
 	// Ready
 	await logger.webhook(`[${repoSlug}](${repoUrl}) was successfully started!`, 0x59D267);
-	logger.log(`Ready! Now monitoring: ${UFW_LOG_FILE}`, 1);
+	logger.success(`Ready! Now monitoring: ${UFW_LOG_FILE}`);
 	process.send?.('ready');
 })();
 
