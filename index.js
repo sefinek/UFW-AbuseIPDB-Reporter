@@ -69,7 +69,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 		logger.success(`Reported ${srcIp} [${dpt}/${proto}]; Categories: ${categories}; Abuse: ${res.data.abuseConfidenceScore}%`);
 		return true;
 	} catch (err) {
-		const status = err.response?.status ?? 'unknown';
+		const status = err.response?.status;
 		if (status === 429 && JSON.stringify(err.response?.data || {}).includes('Daily rate limit')) {
 			if (!ABUSE_STATE.isLimited) {
 				ABUSE_STATE.isLimited = true;
@@ -87,11 +87,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 			}
 		} else {
 			const failureMsg = `Failed to report ${srcIp} [${dpt}/${proto}]; ${err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : err.message}`;
-			if (status === 429) {
-				logger.info(failureMsg);
-			} else {
-				logger.error(failureMsg);
-			}
+			status === 429 ? logger.info(failureMsg) : logger.error(failureMsg);
 		}
 	}
 };
