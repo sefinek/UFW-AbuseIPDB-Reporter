@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##################################################################
-#    Copyright 2024-2025 (c) by Sefinek All rights reserved.     #
+#    Copyright 2024-2026 (c) by Sefinek All rights reserved.     #
 #                    https://sefinek.net                         #
 ##################################################################
 
