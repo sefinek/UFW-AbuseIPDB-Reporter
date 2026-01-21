@@ -25,7 +25,7 @@ server to stay updated on the latest changes and more: https://discord.gg/53DBjT
 📩 Author        : Sefinek <contact@sefinek.net> (https://sefinek.net)
 🔵 Discord       : https://discord.gg/RVH8UXgmzs
 😺 GitHub Issues : https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues
-📦 Last update   : 20.12.2025
+📦 Last update   : 12.01.2026
 ============================================================================================
 
 EOF
