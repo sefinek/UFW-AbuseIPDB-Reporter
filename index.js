@@ -77,7 +77,7 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 				ABUSE_STATE.sentBulk = false;
 				LAST_RATELIMIT_LOG = Date.now();
 				RATELIMIT_RESET = nextRateLimitReset();
-				logger.info(`Daily API request limit for specified endpoint reached. Reports will be buffered until ${RATELIMIT_RESET.toLocaleString()}. Bulk report will be sent the following day.`, { discord: true });
+				logger.info(`Daily API request limit for specified endpoint reached. Reports will be buffered until \`${RATELIMIT_RESET.toLocaleString()}\`. Bulk report will be sent the following day.`, { discord: true });
 			}
 
 			if (!BULK_REPORT_BUFFER.has(srcIp)) {
