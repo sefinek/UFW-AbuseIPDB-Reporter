@@ -261,6 +261,7 @@ else
     echo "✅ The repository already exists"
 fi
 
+sudo mkdir -p /opt/ufw-abuseipdb/tmp
 sudo chown "$USER":"$USER" /opt/ufw-abuseipdb -R
 
 echo "📥 Pulling latest changes..."
