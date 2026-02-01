@@ -12,6 +12,8 @@ module.exports = {
 
 		// Application restart policy settings
 		wait_ready: true,
+		kill_timeout: 10000,
+		listen_timeout: 30000,
 		autorestart: true,
 		max_restarts: 10,
 		min_uptime: 20000,
