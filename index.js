@@ -212,7 +212,12 @@ const processLogLine = async (line, test = false) => {
 				incompleteLine = lines.pop();
 
 				for (const line of lines) {
-					if (line.trim()) await processLogLine(line);
+					if (!line.trim()) continue;
+					try {
+						await processLogLine(line);
+					} catch (err) {
+						logger.error(`Failed to process log line: ${err.message}`);
+					}
 				}
 			});
 		});
