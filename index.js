@@ -1,4 +1,4 @@
-//   Copyright 2024-2025 © by Sefinek. All Rights Reserved.
+//   Copyright 2024-2026 © by Sefinek. All Rights Reserved.
 //                     https://sefinek.net
 
 const fs = require('node:fs');

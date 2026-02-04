@@ -109,4 +109,4 @@ If you want to contribute to the development of this project, feel free to creat
 
 
 ## 🔑 [GPL-3.0 License](LICENSE)
-Copyright 2024-2025 © by [Sefinek](https://sefinek.net). All rights reserved.
+Copyright 2024-2026 © by [Sefinek](https://sefinek.net). All rights reserved.
