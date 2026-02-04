@@ -246,5 +246,3 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 module.exports = processLogLine;
-
-// test5
