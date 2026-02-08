@@ -1,6 +1,6 @@
 {
   "name": "ufw-abuseipdb-reporter",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "homepage": "https://github.com/sefinek/UFW-AbuseIPDB-Reporter#readme",
   "bugs": {
     "url": "https://github.com/sefinek/UFW-AbuseIPDB-Reporter/issues"
@@ -20,7 +20,7 @@
     "update": "npm run pull && npm ci --omit=dev && pm2 restart ufw-abuseipdb"
   },
   "dependencies": {
-    "axios": "^1.13.4",
+    "axios": "^1.13.5",
     "axios-retry": "^4.5.0",
     "chokidar": "^5.0.0",
     "cron": "^4.4.0",
@@ -28,12 +28,12 @@
     "csv-stringify": "^6.6.0",
     "form-data": "^4.0.5",
     "ipaddr.js": "^2.3.0",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "simple-git": "^3.30.0",
     "ufw-log-parser": "^0.1.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "globals": "^17.3.0"
   }
 }
