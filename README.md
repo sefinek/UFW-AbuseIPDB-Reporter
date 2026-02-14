@@ -45,17 +45,10 @@ bash <(wget -qO- https://raw.githubusercontent.com/sefinek/UFW-AbuseIPDB-Reporte
 
 ### Manually
 #### Node.js installation
-```bash
-sudo apt install -y curl && \
-curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - && \
-sudo apt install -y nodejs
-```
+See https://gist.github.com/sefinek/fb50041a5f456321d58104bbf3f6e649.
 
 #### Git installation
-```bash
-sudo add-apt-repository -y ppa:git-core/ppa && \
-sudo apt update && sudo apt install -y git
-```
+See https://gist.github.com/sefinek/1de50073ffbbae82fc901506304f0ada.
 
 #### Commands
 ```bash
