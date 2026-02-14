@@ -1,4 +1,10 @@
 # 🛡️ UFW AbuseIPDB Reporter
+[![Version](https://img.shields.io/github/package-json/v/sefinek/UFW-AbuseIPDB-Reporter?label=version)](https://github.com/sefinek/UFW-AbuseIPDB-Reporter)
+[![License: GPL v3](https://img.shields.io/github/license/sefinek/UFW-AbuseIPDB-Reporter)](https://www.gnu.org/licenses/gpl-3.0)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Last Commit](https://img.shields.io/github/last-commit/sefinek/UFW-AbuseIPDB-Reporter?label=last%20commit)](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/commits)
+[![Stars](https://img.shields.io/github/stars/sefinek/UFW-AbuseIPDB-Reporter)](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/stargazers)
+
 An integration tool designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
 To prevent excessive reporting of the same IP address within a short time period, the tool uses a temporary cache file to track previously reported IP addresses.
 
