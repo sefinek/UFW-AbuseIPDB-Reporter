@@ -5,7 +5,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/sefinek/UFW-AbuseIPDB-Reporter?label=last%20commit)](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/commits)
 [![Stars](https://img.shields.io/github/stars/sefinek/UFW-AbuseIPDB-Reporter)](https://github.com/sefinek/UFW-AbuseIPDB-Reporter/stargazers)
 
-An integration tool designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.  
+An integration tool designed to analyze UFW logs and report IP addresses blocked by the firewall to the [AbuseIPDB](https://www.abuseipdb.com) database.
 To prevent excessive reporting of the same IP address within a short time period, the tool uses a temporary cache file to track previously reported IP addresses.
 
 ⭐ If you like this repository or find it useful, I'd greatly appreciate it if you could give it a star. Many thanks!  
