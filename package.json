@@ -14,7 +14,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "m": "ncu -u && npm install && npm update && npm audit fix",
+    "m": "ncu -u && npm install && npm update",
     "pull": "git pull origin main && git submodule update --init",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update": "npm run pull && npm ci --omit=dev && pm2 restart ufw-abuseipdb"
