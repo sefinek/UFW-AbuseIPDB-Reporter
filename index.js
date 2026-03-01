@@ -13,6 +13,7 @@ const ABUSE_STATE = require('./scripts/services/state.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
 const { repoSlug, repoUrl } = require('./scripts/repo.js');
 const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
+const { initWhitelist, isWhitelisted } = require('./scripts/services/whitelist.js');
 const logger = require('./scripts/logger.js');
 const { UFW_LOG_FILE, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL } = config.MAIN;
 
@@ -121,8 +122,14 @@ const processLogLine = async (line, test = false) => {
 		return;
 	}
 
-	if (isSpecialPurposeIP(srcIp)) {
-		if (EXTENDED_LOGS) logger.info(`Ignoring local IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+	if (isWhitelisted(srcIp)) {
+		if (EXTENDED_LOGS) logger.info(`Ignoring whitelisted IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+		return;
+	}
+
+	const specialIP = isSpecialPurposeIP(srcIp);
+	if (specialIP.is) {
+		if (EXTENDED_LOGS) logger.info(`Ignoring ${specialIP.range} IP address: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
 		return;
 	}
 
@@ -173,6 +180,9 @@ const processLogLine = async (line, test = false) => {
 
 	// Fetch IPs
 	await refreshServerIPs();
+
+	// Whitelist
+	initWhitelist();
 
 	// Load cache
 	await loadReportedIPs();

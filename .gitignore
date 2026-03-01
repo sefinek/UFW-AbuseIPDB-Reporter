@@ -1,3 +1,4 @@
 node_modules
 tmp
 config.js
+whitelist.txt
