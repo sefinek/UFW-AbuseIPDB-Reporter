@@ -1,11 +1,12 @@
 //   Copyright 2024-2026 © by Sefinek. All Rights Reserved.
 //                   https://sefinek.net
 
-const fs = require('node:fs');
-const chokidar = require('chokidar');
 const { parseUfwLog } = require('ufw-log-parser');
+const config = require('./config.js');
+require('./scripts/validations/index.js')(config.MAIN);
 const banner = require('./scripts/banners/ufw.js');
 const { axiosService } = require('./scripts/services/axios.js');
+const tailFile = require('./scripts/services/tailFile.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const ABUSE_STATE = require('./scripts/services/state.js');
@@ -13,7 +14,6 @@ const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher
 const { repoSlug, repoUrl } = require('./scripts/repo.js');
 const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
 const logger = require('./scripts/logger.js');
-const config = require('./config.js');
 const { UFW_LOG_FILE, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL } = config.MAIN;
 
 const RATE_LIMIT_LOG_INTERVAL = 10 * 60 * 1000;
@@ -25,7 +25,7 @@ const nextRateLimitReset = () => {
 	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 1));
 };
 
-let LAST_RATELIMIT_LOG = 0, LAST_STATS_LOG = 0, RATELIMIT_RESET = nextRateLimitReset(), fileOffset = 0;
+let LAST_RATELIMIT_LOG = 0, LAST_STATS_LOG = 0, RATELIMIT_RESET = nextRateLimitReset();
 
 const checkRateLimit = async () => {
 	const now = Date.now();
@@ -100,9 +100,15 @@ const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, catego
 };
 
 const processLogLine = async (line, test = false) => {
-	if (!line.includes('[UFW BLOCK]')) return logger.warn(`Ignoring invalid line: ${line}`);
+	if (!line || !line.includes('[UFW BLOCK]')) return;
 
-	const data = parseUfwLog(line);
+	let data;
+	try {
+		data = parseUfwLog(line);
+	} catch (err) {
+		return logger.error(`Failed to parse UFW log line: ${err.message}`);
+	}
+
 	const { srcIp, proto, dpt } = data;
 	if (!srcIp) return logger.error(`Missing SRC in the log line: ${line}`, { ping: true });
 
@@ -178,57 +184,8 @@ const processLogLine = async (line, test = false) => {
 		await sendBulkReport();
 	}
 
-	// Check UFW_LOG_FILE
-	if (!fs.existsSync(UFW_LOG_FILE)) {
-		logger.error(`Log file ${UFW_LOG_FILE} does not exist`, { ping: true });
-		return;
-	}
-
-	// Watch
-	let incompleteLine = '';
-	let processing = Promise.resolve();
-
-	fileOffset = fs.statSync(UFW_LOG_FILE).size;
-	chokidar.watch(UFW_LOG_FILE, { persistent: true, ignoreInitial: true })
-		.on('change', filePath => {
-			const stats = fs.statSync(filePath);
-			if (stats.size < fileOffset) {
-				incompleteLine = '';
-				fileOffset = 0;
-				logger.info('The file has been truncated, and the offset has been reset');
-			}
-
-			const start = fileOffset;
-			fileOffset = stats.size;
-
-			processing = processing.then(async () => {
-				let data = '';
-				try {
-					await new Promise((resolve, reject) => {
-						fs.createReadStream(filePath, { start, encoding: 'utf8' })
-							.on('data', chunk => { data += chunk; })
-							.on('end', resolve)
-							.on('error', reject);
-					});
-				} catch (err) {
-					logger.error(`Failed to read log chunk: ${err.message}`);
-					return;
-				}
-
-				const text = incompleteLine + data;
-				const lines = text.split('\n');
-				incompleteLine = lines.pop();
-
-				for (const line of lines) {
-					if (!line.trim()) continue;
-					try {
-						await processLogLine(line);
-					} catch (err) {
-						logger.error(`Failed to process log line: ${err.message}`);
-					}
-				}
-			});
-		});
+	// Tail file
+	await tailFile(UFW_LOG_FILE, processLogLine);
 
 	// Summaries
 	if (DISCORD_WEBHOOK_ENABLED && DISCORD_WEBHOOK_URL) await require('./scripts/services/summaries.js')();
