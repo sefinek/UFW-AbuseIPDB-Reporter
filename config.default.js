@@ -1,18 +1,18 @@
 exports.MAIN = {
 	/* --------------------------- Server --------------------------- */
 	SERVER_ID: null, // Server identifier (e.g., 'hp-terminal', 'pl-cluster', 'de1'). Use 'development' for testing only. 'production' has no effect. Use null to leave it unset.
-	EXTENDED_LOGS: false, // Specifies whether the script should display additional information in the logs.
+	EXTENDED_LOGS: false, // true to display additional details in the logs.
 	UFW_LOG_FILE: '/var/log/ufw.log',
 	CACHE_FILE: './tmp/ufw-abuseipdb-reporter.cache',
 
 	/* --------------------------- Network --------------------------- */
 	IP_ASSIGNMENT: 'dynamic', // 'static' for a fixed IP, 'dynamic' if it may change over time.
 	IP_REFRESH_SCHEDULE: '0 */6 * * *', // Cron schedule for checking the public IP assigned by your ISP. Used only with dynamic IPs to prevent accidental self-reporting. If IP_ASSIGNMENT is set to 'static', the script will check your IP only once.
-	IPv6_SUPPORT: true, // true if the device has a globally routable address assigned by the ISP.
+	IPv6_SUPPORT: true, // Set to true if the device has a globally routable IPv6 address assigned by the ISP.
 
 	/* --------------------------- Reports --------------------------- */
 	ABUSEIPDB_API_KEY: '', // https://www.abuseipdb.com/account/api
-	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set values like 1 hour, as it wouldn't make sense due to rate limits.
+	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set too low values, as it would waste API quota due to daily rate limits.
 
 	/* --------------------------- Automatic Updates --------------------------- */
 	AUTO_UPDATE_ENABLED: false, // Set to true to enable automatic updates via "git pull", false to disable. This option is discouraged due to potential future incompatibilities. Enable it only if you actively monitor the server and want the latest version.
