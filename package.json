@@ -21,20 +21,20 @@
   },
   "dependencies": {
     "@logdna/tail-file": "^4.0.2",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "cron": "^4.4.0",
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
     "form-data": "^4.0.5",
     "ipaddr.js": "^2.3.0",
     "semver": "^7.7.4",
-    "simple-git": "^3.33.0",
+    "simple-git": "^3.36.0",
     "split2": "^4.2.0",
     "ufw-log-parser": "^0.1.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "globals": "^17.4.0"
+    "globals": "^17.5.0"
   },
   "engines": {
     "node": ">=20.12.0"
