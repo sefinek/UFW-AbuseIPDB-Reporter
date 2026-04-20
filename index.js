@@ -15,7 +15,7 @@ const { repoSlug, repoUrl } = require('./scripts/repo.js');
 const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
 const { initWhitelist, isWhitelisted } = require('./scripts/services/whitelist.js');
 const logger = require('./scripts/logger.js');
-const { UFW_LOG_FILE, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL } = config.MAIN;
+const { UFW_LOG_FILE, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL, IGNORED_PORTS } = config.MAIN;
 
 const RATE_LIMIT_LOG_INTERVAL = 10 * 60 * 1000;
 const BUFFER_STATS_INTERVAL = 5 * 60 * 1000;
@@ -135,6 +135,11 @@ const processLogLine = async (line, test = false) => {
 
 	if (proto === 'UDP') {
 		if (EXTENDED_LOGS) logger.info(`Skipping UDP traffic: SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
+		return;
+	}
+
+	if (Array.isArray(IGNORED_PORTS) && IGNORED_PORTS.includes(Number(dpt))) {
+		if (EXTENDED_LOGS) logger.info(`Skipping ignored port: PROTO=${proto?.toLowerCase()} SRC=${srcIp} DPT=${dpt} ID=${data.id}`);
 		return;
 	}
 

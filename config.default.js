@@ -13,6 +13,7 @@ exports.MAIN = {
 	/* --------------------------- Reports --------------------------- */
 	ABUSEIPDB_API_KEY: '', // https://www.abuseipdb.com/account/api
 	IP_REPORT_COOLDOWN: 12 * 60 * 60 * 1000, // Minimum time between reports of the same IP. Must be >= 15 minutes. Do not set too low values, as it would waste API quota due to daily rate limits.
+	IGNORED_PORTS: [], // Destination ports to never report. Useful when running a BitTorrent client on the same machine, as peers connecting to that port would otherwise be falsely reported as port scanners. Example: [12345, 51413]
 
 	/* --------------------------- Automatic Updates --------------------------- */
 	AUTO_UPDATE_ENABLED: false, // Set to true to enable automatic updates via "git pull", false to disable. This option is discouraged due to potential future incompatibilities. Enable it only if you actively monitor the server and want the latest version.
