@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@logdna/tail-file": "^4.0.2",
-    "axios": "^1.15.1",
+    "axios": "^1.15.2",
     "cron": "^4.4.0",
     "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0",
