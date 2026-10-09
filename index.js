@@ -10,6 +10,7 @@ const tailFile = require('./scripts/services/tailFile.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const ABUSE_STATE = require('./scripts/services/state.js');
+const { truncateComment } = require('./scripts/comment.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
 const { repoSlug, repoUrl } = require('./scripts/repo.js');
 const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
@@ -50,6 +51,7 @@ const checkRateLimit = async () => {
 
 const reportIp = async ({ srcIp, dpt = 'N/A', proto = 'N/A', timestamp }, categories, comment) => {
 	if (!srcIp) return logger.error('Missing source IP (srcIp)', { ping: true });
+	comment = truncateComment(comment);
 
 	await checkRateLimit();
 
