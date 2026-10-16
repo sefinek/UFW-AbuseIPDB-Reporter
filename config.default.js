@@ -35,7 +35,7 @@ exports.REPORT_COMMENT = ({ date, srcIp, dstIp, proto, spt, dpt, In, Out, mac, l
 
 
 // See: https://www.abuseipdb.com/categories
-const { FLAGS, createFlagCollection } = require('./scripts/flags.js');
+const { FLAGS, createFlagCollection } = require('./scripts/reporting/flags.js');
 const CATEGORIES = {
 	21:   [FLAGS.PORT_SCAN, FLAGS.FTP],
 	22:   [FLAGS.PORT_SCAN, FLAGS.SSH],

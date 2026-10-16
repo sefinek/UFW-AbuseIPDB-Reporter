@@ -10,12 +10,12 @@ const tailFile = require('./scripts/services/tailFile.js');
 const { saveBufferToFile, loadBufferFromFile, sendBulkReport, BULK_REPORT_BUFFER } = require('./scripts/services/bulk.js');
 const { reportedIPs, loadReportedIPs, saveReportedIPs, isIPReportedRecently, markIPAsReported } = require('./scripts/services/cache.js');
 const ABUSE_STATE = require('./scripts/services/state.js');
-const { truncateComment } = require('./scripts/comment.js');
+const { truncateComment } = require('./scripts/reporting/comment.js');
 const { refreshServerIPs, getServerIPs } = require('./scripts/services/ipFetcher.js');
-const { repoSlug, repoUrl } = require('./scripts/repo.js');
-const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
+const { repoSlug, repoUrl } = require('./scripts/core/repo.js');
+const isSpecialPurposeIP = require('./scripts/ip/isSpecialPurposeIP.js');
 const { initWhitelist, isWhitelisted } = require('./scripts/services/whitelist.js');
-const logger = require('./scripts/logger.js');
+const logger = require('./scripts/core/logger.js');
 const { UFW_LOG_FILE, EXTENDED_LOGS, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL, IGNORED_PORTS } = config.MAIN;
 
 const RATE_LIMIT_LOG_INTERVAL = 10 * 60 * 1000;
