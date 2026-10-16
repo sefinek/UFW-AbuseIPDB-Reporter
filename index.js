@@ -16,7 +16,7 @@ const { repoSlug, repoUrl } = require('./scripts/repo.js');
 const isSpecialPurposeIP = require('./scripts/isSpecialPurposeIP.js');
 const { initWhitelist, isWhitelisted } = require('./scripts/services/whitelist.js');
 const logger = require('./scripts/logger.js');
-const { UFW_LOG_FILE, SERVER_ID, EXTENDED_LOGS, AUTO_UPDATE_ENABLED, AUTO_UPDATE_SCHEDULE, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL, IGNORED_PORTS } = config.MAIN;
+const { UFW_LOG_FILE, EXTENDED_LOGS, DISCORD_WEBHOOK_ENABLED, DISCORD_WEBHOOK_URL, IGNORED_PORTS } = config.MAIN;
 
 const RATE_LIMIT_LOG_INTERVAL = 10 * 60 * 1000;
 const BUFFER_STATS_INTERVAL = 5 * 60 * 1000;
@@ -178,12 +178,8 @@ const processLogLine = async (line, test = false) => {
 (async () => {
 	banner();
 
-	// Auto updates
-	if (AUTO_UPDATE_ENABLED && AUTO_UPDATE_SCHEDULE && SERVER_ID !== 'development') {
-		await require('./scripts/services/updates.js')();
-	} else {
-		await require('./scripts/services/version.js');
-	}
+	// Version check
+	require('./scripts/services/version.js');
 
 	// Fetch IPs
 	await refreshServerIPs();
