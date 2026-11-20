@@ -20,7 +20,7 @@
     "update": "npm run pull && npm ci --omit=dev && pm2 restart ufw-abuseipdb"
   },
   "dependencies": {
-    "@logdna/tail-file": "^4.0.2",
+    "@logdna/tail-file": "^5.0.2",
     "axios": "^1.21.1",
     "cron": "^4.4.0",
     "csv-parse": "^7.0.3",
@@ -28,7 +28,7 @@
     "form-data": "^4.0.6",
     "ipaddr.js": "^2.5.0",
     "semver": "^7.8.6",
-    "simple-git": "^4.0.2",
+    "simple-git": "^4.1.0",
     "split2": "^4.2.0",
     "ufw-log-parser": "^0.1.4"
   },
