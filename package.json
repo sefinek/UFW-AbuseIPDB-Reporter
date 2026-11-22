@@ -14,6 +14,9 @@
   "author": "Sefinek <contact@sefinek.net> (https://sefinek.net)",
   "type": "commonjs",
   "main": "index.js",
+  "directories": {
+    "test": "scripts/test"
+  },
   "scripts": {
     "m": "ncu -u && npm install && npm update",
     "pull": "git pull origin main && git submodule update --init",
