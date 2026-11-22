@@ -16,7 +16,7 @@
   "scripts": {
     "m": "ncu -u && npm install && npm update",
     "pull": "git pull origin main && git submodule update --init",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "update": "npm run pull && npm ci --omit=dev && pm2 restart ufw-abuseipdb"
   },
   "dependencies": {
